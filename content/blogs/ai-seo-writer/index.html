@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+   <title>Froala WYSIWYG Editor</title>
+
+        <!-- Include Froala CSS -->
+
+        
+    <link href="{{editor__download__folder}}/css/froala_editor.pkgd.min.css" rel="stylesheet"   type="text/css" />
+
+</head>
+
+<body>
+
+     <!-- HTML element where the editor will be initialized -->
+
+        <div id="editor">
+
+        {{Article Content from the server}}
+
+            </div>
+
+        <!-- Add other page elements-->
+
+        <!-- Add other page elements-->
+
+        <!-- Include Froala Editor JS files -->
+
+        
+    <script type="text/javascript" src="{{editor__download__folder}}/js/froala_editor.pkgd.min.js"></script>
+
+      
+    <script>
+
+        FroalaEditor.DEFAULTS.paragraphFormat = {
+
+            H2: 'Heading 2',
+
+            H3: 'Heading 3',
+
+            N: 'Normal',
+
+        },
+
+            new FroalaEditor('div#froala-editor', {
+
+                toolbarSticky: true,
+
+                toolbarStickyOffset: 500,
+
+                toolbarButtons: ["paragraphFormat", "bold", "italic", "|", "formatOL", "formatUL", "|", "insertLink", "insertImage", "quote", "|", "undo", "redo"],
+
+            })
+
+    </script>
+
+</body>
+
+</html>
