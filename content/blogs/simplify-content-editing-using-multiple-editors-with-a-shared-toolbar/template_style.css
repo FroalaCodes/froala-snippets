@@ -1,0 +1,24 @@
+.fr-toolbar {
+  display: block !important;
+  background: #eee;
+}
+
+.header {
+  width: 100%;
+  height: 100px;
+  background-color: greenyellow;
+}
+
+.separator {
+  background-color: greenyellow;
+  width: 60px;
+  height: 7px;
+}
+
+.editable-section {
+  border: 2px solid transparent;
+}
+
+.editable-section:hover {
+  border: 2px solid #eee;
+}
