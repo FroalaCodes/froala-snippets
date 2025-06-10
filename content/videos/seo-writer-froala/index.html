@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Froala AI Content Optimizer with API Call Structure</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/froala-editor@latest/css/froala_editor.pkgd.min.css" rel="stylesheet" type="text/css" />
+  <link href="https://cdn.jsdelivr.net/npm/froala-editor@latest/css/froala_style.min.css" rel="stylesheet" type="text/css" />
+
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      padding: 0;
+      background-color: #f4f4f4;
+      color: #333;
+    }
+    #froala-container {
+        max-width: 800px;
+        margin: 30px auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    #froala-editor {
+      padding: 15px;
+      border: 1px dashed #ddd;
+      margin-top: 20px;
+      min-height: 150px;
+    }
+    h1 {
+        text-align: center;
+        color: #2c3e50;
+    }
+    p.instructions {
+        text-align: center;
+        color: #7f8c8d;
+        margin-bottom: 25px;
+    }
+    .api-notice {
+        background-color: #fff3cd;
+        color: #856404;
+        padding: 10px;
+        border: 1px solid #ffeeba;
+        border-radius: 4px;
+        margin-bottom: 15px;
+        font-size: 0.9em;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="froala-container">
+    <h1>Froala AI Content Optimizer ✨</h1>
+    <p class="instructions">Highlight text in the editor below. The inline toolbar will appear with an "AI Assist" button.</p>
+
+    <div class="api-notice">
+      <strong>Note:</strong> The API call section in the JavaScript below is a template. You will need to:
+      <ol>
+        <li>Replace <code>'YOUR_DEEPSEEK_API_KEY'</code> with your actual DeepSeek API key.</li>
+        <li>Replace <code>'YOUR_DEEPSEEK_API_ENDPOINT'</code> with the correct API endpoint URL from DeepSeek.</li>
+        <li>Adjust the <code>requestBody</code> and response parsing (<code>data.choices[0].message.content</code>) to match DeepSeek's specific API documentation.</li>
+        <li>For production, handle API keys securely (e.g., via a backend proxy) rather than hardcoding in client-side JS.</li>
+      </ol>
+    </div>
+
+    <div id="froala-editor">
+      <h3>Click here to edit the content</h3>
+      <p>This is the inline example for the Froala rich text editor. For this, the <code>toolbarInline</code> option is set to <code>true</code>. Try selecting <strong>some of this text</strong> to see the AI Assist features in action!</p>
+      <p>The AI can help you <em>simplify complex sentences</em>, expand on ideas to make them longer, or condense text to make it shorter and more punchy. This is particularly useful for copywriters who need to refine their message quickly.</p>
+      <ul>
+        <li>Select text.</li>
+        <li>Click the "AI Assist" button (magic wand icon).</li>
+        <li>Choose an action from the dropdown.</li>
+      </ul>
+    </div>
+  </div>
+
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/froala-editor@latest/js/froala_editor.pkgd.min.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+      FroalaEditor.RegisterCommand('aiAssist', {
+        title: 'AI Assist',
+        icon: 'fas fa-magic',
+        type: 'dropdown',
+        focus: false,
+        undo: true,
+        refreshAfterCallback: true,
+        options: {
+          'simplify': 'Simplify Text',
+          'makeLonger': 'Make Text Longer',
+          'makeShorter': 'Make Text Shorter'
+        },
+        callback: function (cmd, selectedOptionKey) {
+          const editor = this;
+          const selectedText = editor.selection.text();
+
+          if (!selectedText.trim()) {
+            alert('Please select some text to use AI Assist.');
+            return;
+          }
+          processTextWithAI(selectedText, selectedOptionKey, editor);
+        }
+      });
+
+      async function processTextWithAI(text, action, editorInstance) {
+        console.log(`Original selected text: "${text}"`);
+        console.log(`AI Action requested: ${action}`);
+
+        let instructionForAI = "";
+        let systemMessage = "You are an AI assistant that modifies text based on user instructions."; // General system message
+
+        switch (action) {
+          case 'simplify':
+            instructionForAI = `Simplify the following text, making it easier to understand while retaining the core meaning: "${text}"`;
+            systemMessage = "You are an AI assistant skilled at simplifying complex text.";
+            break;
+          case 'makeLonger':
+            instructionForAI = `Expand on the following text, adding more relevant details, examples, or explanations to make it significantly longer: "${text}"`;
+            systemMessage = "You are an AI assistant skilled at elaborating and expanding on text.";
+            break;
+          case 'makeShorter':
+            instructionForAI = `Shorten the following text, making it more concise and to the point, removing any redundancy or fluff while preserving the key message: "${text}"`;
+            systemMessage = "You are an AI assistant skilled at summarizing and shortening text concisely.";
+            break;
+          default:
+            instructionForAI = `Process the following text: "${text}"`;
+        }
+
+        console.log(`Instruction for AI: ${instructionForAI}`);
+        editorInstance.toolbar.disable(); // Disable toolbar during processing
+
+        // --- START: DeepSeek API Call ---
+        const apiKey = 'apikey'; // <-- REPLACE WITH YOUR ACTUAL API KEY
+        const apiEndpoint = 'https://api.deepseek.com/chat/completions'; // <-- REPLACE WITH ACTUAL DEEPSEEK ENDPOINT
+                                                         // e.g., 'https://api.deepseek.com/v1/chat/completions'
+
+        // This is a common structure for chat completion APIs.
+        // You MUST check DeepSeek's documentation for the correct model names,
+        // request body structure, and response format.
+        const requestBody = {
+          model: "deepseek-chat", // Or "deepseek-coder" or other appropriate model - CHECK DOCUMENTATION
+          messages: [
+            { role: "system", content: systemMessage },
+            { role: "user", content: instructionForAI }
+          ],
+          // Optional parameters (check DeepSeek docs):
+          // temperature: 0.7,
+          // max_tokens: 200,
+        };
+
+        let modifiedText = `[AI processing failed. Original: ${text}]`; // Default in case of error
+
+        try {
+          const response = await fetch(apiEndpoint, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${apiKey}`
+            },
+            body: JSON.stringify(requestBody)
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({ message: response.statusText }));
+            throw new Error(`API Error: ${response.status} - ${errorData.message || 'Unknown error'}`);
+          }
+
+          const data = await response.json();
+
+          // Adjust this part based on DeepSeek's actual response structure
+          // This is a common pattern for chat completion APIs:
+          if (data.choices && data.choices.length > 0 && data.choices[0].message && data.choices[0].message.content) {
+            modifiedText = data.choices[0].message.content;
+          } else {
+            // If the structure is different, log the data to see what you received
+            console.error('Unexpected API response structure:', data);
+            modifiedText = `[AI response format unexpected. Original: ${text}]`;
+          }
+
+        } catch (error) {
+          console.error('Error calling DeepSeek API:', error);
+          alert(`Error processing text with AI: ${error.message}`);
+          // Keep the default modifiedText which indicates failure
+        }
+        // --- END: DeepSeek API Call ---
+
+        console.log(`Text after AI processing: "${modifiedText}"`);
+
+        editorInstance.html.insert(modifiedText);
+        editorInstance.toolbar.enable(); // Re-enable toolbar
+      }
+
+      new FroalaEditor('div#froala-editor', {
+        toolbarInline: true,
+        charCounterCount: false,
+        toolbarButtons: [
+          'bold', 'italic', 'underline', 'strikeThrough', '|',
+          'aiAssist', '|',
+          'formatUL', 'formatOL', '|',
+          'undo', 'redo', 'selectAll'
+        ],
+        events: {
+          'contentChanged': function () {
+            // console.log('Editor content changed.');
+          }
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>
