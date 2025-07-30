@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Froala Editor with Find & Replace Demo</title>
+
+    <!-- Include Froala Editor CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/froala-editor@latest/css/froala_editor.pkgd.min.css" rel="stylesheet"
+        type="text/css" />
+    <link href="https://cdn.jsdelivr.net/npm/froala-editor@latest/css/plugins/code_view.min.css" rel="stylesheet"
+        type="text/css" />
+    <link href='https://cdn.jsdelivr.net/npm/froala-editor@4.6.0/css/froala_editor.pkgd.min.css' rel='stylesheet'
+        type='text/css' />
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f9ff;
+            color: #333;
+            margin: 0;
+            padding: 1rem;
+            min-height: 100vh;
+            font-size: 16px;
+        }
+
+        .demo-container {
+            display: grid;
+            grid-template-columns: 450px 1fr;
+            gap: 2rem;
+            max-width: 1600px;
+            margin: 0 auto;
+            height: 100vh;
+        }
+
+        .controls-section {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            height: calc(100vh - 4rem);
+            overflow-y: auto;
+        }
+
+        .editor-section {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            height: calc(100vh - 4rem);
+            overflow-y: auto;
+        }
+
+        h1,
+        h2 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #1a202c;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .method-group {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background-color: #f8fafc;
+            border-radius: 8px;
+            border-left: 4px solid #4DB099;
+        }
+
+        .method-group h3 {
+            margin: 0 0 1rem 0;
+            color: #4DB099;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .method-description {
+            font-size: 0.95rem;
+            color: #4a5568;
+            margin: 0.5rem 0 1rem 0;
+            font-family: 'Courier New', monospace;
+            background-color: #f1f5f9;
+            padding: 0.75rem;
+            border-radius: 4px;
+            line-height: 1.6;
+        }
+
+        .config-option {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background-color: #e2e8f0;
+            border-radius: 6px;
+            border-left: 3px solid #0198F7;
+        }
+
+        .config-option h4 {
+            margin: 0 0 0.5rem 0;
+            color: #2d3748;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .config-option p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #4a5568;
+        }
+
+        .events-desc {
+            margin-bottom: 1rem !important;
+        }
+
+        .control-row {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            align-items: center;
+        }
+
+        .control-row input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .control-row button {
+            padding: 0.75rem 1.25rem;
+            background-color: #0198F7;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        .control-row button:hover {
+            background-color: #0284c7;
+        }
+
+        .nav-button {
+            flex: 1;
+            padding: 0.875rem !important;
+            font-size: 1rem !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .single-button {
+            width: 100%;
+            padding: 0.875rem;
+            background-color: #4DB099;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            transition: background-color 0.2s;
+        }
+
+        .single-button:hover {
+            background-color: #3b9d86;
+        }
+
+        .config-button {
+            background-color: #0198F7;
+            margin-bottom: 0.5rem;
+        }
+
+        .config-button:hover {
+            background-color: #0284c7;
+        }
+
+        .events-log {
+            background-color: #1f2937;
+            color: #f9fafb;
+            padding: 1.25rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            height: 200px;
+            overflow-y: auto;
+            margin-top: 1rem;
+        }
+
+        .events-log h3 {
+            margin: 0 0 1rem 0;
+            color: #4DB099;
+            font-size: 1.1rem;
+        }
+
+        .log-entry {
+            margin-bottom: 0.5rem;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #374151;
+        }
+
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        .timestamp {
+            color: #9ca3af;
+            font-size: 0.8rem;
+        }
+
+        .status-info {
+            background-color: #e6f7ff;
+            border: 1px solid #91d5ff;
+            border-radius: 6px;
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .status-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+        }
+
+        .status-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .clear-log-btn {
+            background-color: #ef4444;
+            margin-top: 1rem;
+        }
+
+        .clear-log-btn:hover {
+            background-color: #dc2626;
+        }
+
+        .config-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+        }
+
+        .checkbox-row input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .checkbox-row label {
+            cursor: pointer;
+            color: #2d3748;
+            font-weight: 500;
+        }
+    </style>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="demo-container">
+        <div class="controls-section">
+            <h2>Plugin Methods & Events</h2>
+
+            <div class="status-info">
+                <div class="status-row">
+                    <strong>Matches Found:</strong>
+                    <span id="matches-count">0</span>
+                </div>
+                <div class="status-row">
+                    <strong>Current Match:</strong>
+                    <span id="current-match">None</span>
+                </div>
+                <div class="status-row">
+                    <strong>Current Index:</strong>
+                    <span id="current-index">-1</span>
+                </div>
+            </div>
+
+            <div class="method-group">
+                <h3>Configuration Options</h3>
+                <div class="config-option">
+                    <h4>enableMatchCase</h4>
+                    <p>If set to true, case-sensitive search will be enabled by default when the plugin is initialized.
+                        Default: false</p>
+                </div>
+                <div class="config-option">
+                    <h4>enableMatchWholeWord</h4>
+                    <p>If set to true, the match whole word search will be enabled by default when the plugin is
+                        initialized. Default: false</p>
+                </div>
+                <div class="config-option">
+                    <h4>showFindAndReplace</h4>
+                    <p>If set to true, the Find and Replace popup will be displayed automatically when the editor is
+                        initialized. Default: false</p>
+                </div>
+
+                <div class="config-controls">
+                    <div class="checkbox-row">
+                        <input type="checkbox" id="enable-match-case">
+                        <label for="enable-match-case">Enable Match Case</label>
+                    </div>
+                    <div class="checkbox-row">
+                        <input type="checkbox" id="enable-whole-word">
+                        <label for="enable-whole-word">Enable Match Whole Word</label>
+                    </div>
+                    <div class="checkbox-row">
+                        <input type="checkbox" id="show-popup-init">
+                        <label for="show-popup-init">Show Popup on Init</label>
+                    </div>
+                    <button class="single-button config-button" onclick="reinitializeEditor()">Apply Configuration &
+                        Restart Editor</button>
+                </div>
+            </div>
+
+            <div class="method-group">
+                <h3>Search Methods</h3>
+                <div class="control-row">
+                    <input type="text" id="search-text" placeholder="Enter search text" value="sample">
+                    <button onclick="findMatches()">Find Matches</button>
+                </div>
+                <p class="method-description">findReplace.findMatches(searchText) - Finds all matches and highlights
+                    them</p>
+
+                <div class="control-row">
+                    <button onclick="findNextMatch()" class="nav-button">▶ Find Next</button>
+                    <button onclick="findPreviousMatch()" class="nav-button">◀ Find Previous</button>
+                </div>
+                <p class="method-description">findReplace.findNextMatch(index) / findReplace.findPreviousMatch(index) -
+                    Navigate through matches</p>
+            </div>
+
+            <div class="method-group">
+                <h3>Replace Methods</h3>
+                <div class="control-row">
+                    <input type="text" id="replace-text" placeholder="Replace with" value="example">
+                    <button onclick="replaceMatch()">Replace Current</button>
+                </div>
+                <p class="method-description">findReplace.replaceMatch(replaceText) - Replaces current highlighted match
+                </p>
+
+                <button class="single-button" onclick="replaceAllMatches()">Replace All Matches</button>
+                <p class="method-description">findReplace.replaceMatches(replaceText) - Replaces all found matches</p>
+            </div>
+
+            <div class="method-group">
+                <h3>Popup Controls</h3>
+                <button class="single-button" onclick="showPopup()">Show Popup</button>
+                <p class="method-description">findReplace.showPopup() - Display Find and Replace popup</p>
+
+                <button class="single-button" onclick="hidePopup()">Hide Popup</button>
+                <p class="method-description">findReplace.hidePopup() - Hide Find and Replace popup</p>
+            </div>
+
+            <div class="method-group">
+                <h3>Info Methods</h3>
+                <button class="single-button" onclick="updateStatus()">Update Status Info</button>
+                <p class="method-description">
+                    findReplace.getMatchesCount() - Returns total matches<br>
+                    findReplace.getCurrentMatch() - Returns current match text<br>
+                    findReplace.getCurrentMatchIndex() - Returns current match index
+                </p>
+            </div>
+
+            <div class="events-log">
+                <h3>Plugin Events</h3>
+                <p class="method-description events-desc">
+                    findandreplace.beforeClose - Before popup closes<br>
+                    findandreplace.beforeOnReplace - Before replacing content<br>
+                    findandreplace.onReplace - After successful replace<br>
+                    findandreplace.onReplaceAll - After replacing all matches
+                </p>
+                <div id="log-content"></div>
+            </div>
+            <button class="single-button clear-log-btn" onclick="clearLog()">Clear Log</button>
+        </div>
+
+        <div class="editor-section">
+            <h1>Froala Find & Replace Plugin Demo</h1>
+            <div id="froala-editor">
+                <h2>Test Case 1: Match Case</h2>
+                <p>This section tests case-sensitive searching. The word "Case" is repeated in various capitalizations.
+                </p>
+
+                <p><strong>Lowercase:</strong> This is a test case.</p>
+                <p><strong>Uppercase:</strong> THIS IS A TEST CASE.</p>
+                <p><strong>Title Case:</strong> This Is A Test Case.</p>
+                <p><strong>Mixed Case:</strong> tHiS iS a TeSt cAsE.</p>
+
+                <p><em>Instructions:</em></p>
+                <ul>
+                    <li>Search for <code>case</code> with <strong>Match Case off</strong>. All four instances should be
+                        highlighted.</li>
+                    <li>Search for <code>case</code> with <strong>Match Case on</strong>. Only the first instance
+                        (Lowercase) should be highlighted.</li>
+                    <li>Search for <code>CASE</code> with <strong>Match Case on</strong>. Only the second instance
+                        (Uppercase) should be highlighted.</li>
+                </ul>
+
+                <hr>
+
+                <h2>Test Case 2: Whole Word</h2>
+                <p>This section tests whole word matching using the root word "test".</p>
+
+                <p><strong>Exact Word:</strong> This is a test.</p>
+                <p><strong>Word as Prefix:</strong> The tester began the testing process.</p>
+                <p><strong>Word as Suffix:</strong> This is the final-test.</p>
+                <p><strong>Word with Punctuation:</strong> Can this pass the test?</p>
+
+                <p><em>Instructions:</em></p>
+                <ul>
+                    <li>Search for <code>test</code> with <strong>Whole Word off</strong>. All four lines should be
+                        highlighted.</li>
+                    <li>Search for <code>test</code> with <strong>Whole Word on</strong>. Only the first and fourth
+                        lines should be highlighted.</li>
+                </ul>
+
+                <hr>
+
+                <h2>Test Case 3: Combined "Match Case" and "Whole Word"</h2>
+                <p>This section combines both match types using the word "run".</p>
+
+                <p><strong>Lowercase Whole Word:</strong> Let's go for a run.</p>
+                <p><strong>Title Case Whole Word:</strong> Run, Forrest, Run!</p>
+                <p><strong>Lowercase Partial Match:</strong> The runner is running fast.</p>
+                <p><strong>Uppercase Partial Match:</strong> The system is RUNNING.</p>
+                <p><strong>Mixed Case Combined:</strong> He will run the RUNNING program.</p>
+
+                <p><em>Instructions:</em></p>
+                <ul>
+                    <li>Search for <code>run</code> with <strong>Match Case + Whole Word on</strong>: Only the first
+                        line should match.</li>
+                    <li>Search for <code>Run</code> with <strong>Match Case + Whole Word on</strong>: Only the second
+                        line should match.</li>
+                    <li>Search for <code>run</code> with <strong>Whole Word on + Match Case off</strong>: Both the first
+                        and second lines should match.</li>
+                </ul>
+
+            </div>
+        </div>
+    </div>
+
+    <script type='text/javascript'
+        src='https://cdn.jsdelivr.net/npm/froala-editor@4.6.0/js/froala_editor.pkgd.min.js'></script>
+    <script type='text/javascript'
+        src='https://cdn.jsdelivr.net/npm/froala-editor@latest/js/plugins/find_and_replace.min.js'></script>
+
+    <script>
+        let editor;
+        const logContent = document.getElementById('log-content');
+
+        function logEvent(eventName, data = null) {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+
+            let message = `<strong>${eventName}</strong>`;
+            if (data) {
+                message += `<br>Data: ${JSON.stringify(data)}`;
+            }
+            message += `<br><span class="timestamp">${timestamp}</span>`;
+
+            logEntry.innerHTML = message;
+            logContent.appendChild(logEntry);
+            logContent.scrollTop = logContent.scrollHeight;
+        }
+
+        function clearLog() {
+            logContent.innerHTML = '';
+        }
+
+        function updateStatus() {
+            if (!editor) return;
+
+            try {
+                const matchesCount = editor.findReplace.getMatchesCount();
+                const currentMatch = editor.findReplace.getCurrentMatch();
+                const currentIndex = editor.findReplace.getCurrentMatchIndex();
+
+                document.getElementById('matches-count').textContent = matchesCount;
+                document.getElementById('current-match').textContent = currentMatch || 'None';
+                document.getElementById('current-index').textContent = currentIndex;
+
+                logEvent('Status Updated', {
+                    matchesCount,
+                    currentMatch,
+                    currentIndex
+                });
+            } catch (error) {
+                logEvent('Error getting status', { error: error.message });
+            }
+        }
+
+        // Method implementations
+        let currentSearchResults = [];
+        let currentMatchIndex = -1;
+
+        function findMatches() {
+            const searchText = document.getElementById('search-text').value;
+            if (!searchText.trim()) return;
+
+            try {
+                editor.findReplace.findMatches(searchText);
+                currentMatchIndex = 0; // Reset to first match
+                logEvent('findMatches() called', { searchText });
+                setTimeout(updateStatus, 100);
+            } catch (error) {
+                logEvent('Error in findMatches', { error: error.message });
+            }
+        }
+
+        function findNextMatch() {
+            try {
+                const totalMatches = editor.findReplace.getMatchesCount();
+                if (totalMatches === 0) {
+                    logEvent('No matches to navigate');
+                    return;
+                }
+
+                currentMatchIndex = (currentMatchIndex + 1) % totalMatches;
+                editor.findReplace.findNextMatch(currentMatchIndex);
+                logEvent('findNextMatch() called', { index: currentMatchIndex });
+                setTimeout(updateStatus, 100);
+            } catch (error) {
+                logEvent('Error in findNextMatch', { error: error.message });
+            }
+        }
+
+        function findPreviousMatch() {
+            try {
+                const totalMatches = editor.findReplace.getMatchesCount();
+                if (totalMatches === 0) {
+                    logEvent('No matches to navigate');
+                    return;
+                }
+
+                currentMatchIndex = currentMatchIndex <= 0 ? totalMatches - 1 : currentMatchIndex - 1;
+                editor.findReplace.findPreviousMatch(currentMatchIndex);
+                logEvent('findPreviousMatch() called', { index: currentMatchIndex });
+                setTimeout(updateStatus, 100);
+            } catch (error) {
+                logEvent('Error in findPreviousMatch', { error: error.message });
+            }
+        }
+
+        function replaceMatch() {
+            const replaceText = document.getElementById('replace-text').value;
+            try {
+                editor.findReplace.replaceMatch(replaceText);
+                logEvent('replaceMatch() called', { replaceText });
+                setTimeout(updateStatus, 100);
+            } catch (error) {
+                logEvent('Error in replaceMatch', { error: error.message });
+            }
+        }
+
+        function replaceAllMatches() {
+            const replaceText = document.getElementById('replace-text').value;
+            try {
+                editor.findReplace.replaceMatches(replaceText);
+                logEvent('replaceMatches() called', { replaceText });
+                setTimeout(updateStatus, 100);
+            } catch (error) {
+                logEvent('Error in replaceMatches', { error: error.message });
+            }
+        }
+
+        function showPopup() {
+            try {
+                editor.findReplace.showPopup();
+                logEvent('showPopup() called');
+            } catch (error) {
+                logEvent('Error in showPopup', { error: error.message });
+            }
+        }
+
+        function hidePopup() {
+            try {
+                editor.findReplace.hidePopup();
+                logEvent('hidePopup() called');
+            } catch (error) {
+                logEvent('Error in hidePopup', { error: error.message });
+            }
+        }
+
+        function reinitializeEditor() {
+            const enableMatchCase = document.getElementById('enable-match-case').checked;
+            const enableWholeWord = document.getElementById('enable-whole-word').checked;
+            const showPopupInit = document.getElementById('show-popup-init').checked;
+
+            // Destroy existing editor
+            if (editor) {
+                try {
+                    editor.destroy();
+                    logEvent('Editor destroyed for reinitialization');
+                } catch (error) {
+                    logEvent('Error destroying editor', { error: error.message });
+                }
+            }
+
+            // Initialize with new configuration
+            setTimeout(() => {
+                initializeEditor({
+                    enableMatchCase: enableMatchCase,
+                    enableMatchWholeWord: enableWholeWord,
+                    showFindAndReplace: showPopupInit
+                });
+
+                logEvent('Editor reinitialized with config', {
+                    enableMatchCase,
+                    enableMatchWholeWord: enableWholeWord,
+                    showFindAndReplace: showPopupInit
+                });
+            }, 100);
+        }
+
+        function initializeEditor(config = {}) {
+            try {
+                const editorConfig = {
+                    heightMin: 400,
+                    pluginsEnabled: ['findReplace'],
+                    toolbarButtons: [
+                        ['findReplaceButton', 'bold', 'italic', 'underline', 'strikeThrough']
+                    ],
+                    codeView: true,
+                    attribution: false,
+                    ...config
+                };
+
+                editor = new FroalaEditor('#froala-editor', editorConfig);
+
+                // Wait for editor to be fully initialized
+                editor.events.on('initialized', function () {
+                    // Auto-click the find and replace button to initialize the plugin
+                    const attemptInitialization = (attempts = 0) => {
+                        if (attempts > 10) {
+                            logEvent('Failed to initialize plugin after 10 attempts');
+                            return;
+                        }
+
+                        // Try multiple selectors for the find and replace button
+                        const selectors = [
+                            '[data-cmd="findReplaceButton"]',
+                            '.fr-command[data-cmd="findReplaceButton"]',
+                            'button[data-cmd="findReplaceButton"]',
+                            '.fr-btn[data-cmd="findReplaceButton"]'
+                        ];
+
+                        let findReplaceBtn = null;
+                        for (const selector of selectors) {
+                            findReplaceBtn = document.querySelector(selector);
+                            if (findReplaceBtn) break;
+                        }
+
+                        if (findReplaceBtn && findReplaceBtn.offsetParent !== null) {
+                            // Button found and visible, click it
+                            try {
+                                findReplaceBtn.click();
+                                logEvent('Find & Replace button clicked automatically');
+
+                                // Hide the popup after a brief moment
+                                setTimeout(() => {
+                                    try {
+                                        // Try multiple ways to close the popup
+                                        const closeBtn = document.querySelector('.fr-popup .fr-buttons button[data-cmd="popupClose"], .fr-popup .fr-buttons .fr-command[title*="Close"]');
+                                        if (closeBtn) {
+                                            closeBtn.click();
+                                            logEvent('Popup closed via close button');
+                                        } else {
+                                            // Try ESC key
+                                            const escEvent = new KeyboardEvent('keydown', {
+                                                key: 'Escape',
+                                                keyCode: 27,
+                                                which: 27
+                                            });
+                                            document.dispatchEvent(escEvent);
+                                            logEvent('Popup closed via ESC key');
+                                        }
+
+                                        // Update status after initialization
+                                        setTimeout(updateStatus, 200);
+                                    } catch (error) {
+                                        logEvent('Error closing popup', { error: error.message });
+                                    }
+                                }, 100);
+
+                            } catch (error) {
+                                logEvent('Error clicking find replace button', { error: error.message });
+                            }
+                        } else {
+                            // Button not found or not visible yet, try again
+                            setTimeout(() => attemptInitialization(attempts + 1), 200);
+                        }
+                    };
+
+                    // Start trying to initialize after a short delay
+                    setTimeout(() => attemptInitialization(), 300);
+                });
+
+                // Register event listeners
+                editor.events.on('findandreplace.beforeClose', function () {
+                    logEvent('findandreplace.beforeClose');
+                });
+
+                editor.events.on('findandreplace.beforeOnReplace', function () {
+                    logEvent('findandreplace.beforeOnReplace');
+                });
+
+                editor.events.on('findandreplace.onReplace', function (data) {
+                    logEvent('findandreplace.onReplace', data);
+                    setTimeout(updateStatus, 100);
+                });
+
+                editor.events.on('findandreplace.onReplaceAll', function (data) {
+                    logEvent('findandreplace.onReplaceAll', data);
+                    setTimeout(updateStatus, 100);
+                });
+
+                logEvent('Editor initialized successfully', config);
+
+            } catch (error) {
+                logEvent('Editor initialization failed', { error: error.message });
+                console.error("Failed to initialize Froala Editor:", error);
+            }
+        }
+
+        // Initialize editor
+        document.addEventListener('DOMContentLoaded', function () {
+            initializeEditor();
+        });
+    </script>
+
+</body>
+
+</html>
