@@ -6,25 +6,18 @@ import 'froala-editor/js/plugins.pkgd.min.js';
 import configData from './config.js';
 
 function FroalaComponent() {
-    const [tags, setTags] = useState([]);
     const config = {
         filestackOptions: {
             uploadToFilestackOnly: true,
             filestackAPI: configData.filestackAPI,
             pickerOptions: {
-              accept: ["image/*"],
-              fromSources: ["local_file_system"],
+              accept: ['image/*, video/*'],
+              fromSources: ['local_file_system']
             },
         },
         events: {
             'filestack.uploadedToFilestack': function (response) {
-                if(response && response.filesUploaded[0].handle){
-                    const fileHandle = response.filesUploaded[0].handle;
-                    performEnhancements(fileHandle, this);
-                }
-                else{
-                    console.error("Image upload failed, no URL found in response", response);
-                }
+                console.log(response.filesUploaded[0]);
             }
         },
         heightMin: 500,
@@ -60,47 +53,12 @@ function FroalaComponent() {
         };
     }, []);
 
-    async function performEnhancements(fileHandle, editorInstance) {
-        const policy = configData.policy;
-        const signature = configData.signature;
-        const autoTagURL = `https://cdn.filestackcontent.com/security=p:${policy},s:${signature}/tags/${fileHandle}`;
-        const redEyeURL = `https://cdn.filestackcontent.com/redeye/${fileHandle}`;
-
-        try {
-            editorInstance.html.insert(
-                `<img src="${redEyeURL}" alt="Enhanced Image" style="display: block; margin: 20px auto; width: 302px; height: 190.23px;" />`
-            );
-
-            const autoTagResult = await fetch(autoTagURL);
-            const tagData = await autoTagResult.json();
-            const tags = tagData?.tags?.auto;
-            if(tags) {
-                setTags(Object.entries(tags));
-            }
-            else {
-                console.error("No tags found in response.");
-            }
-        }
-        catch(error) {
-            console.error("Error during enhancements:", error);
-        }
-    }
-
     return (
         <div>
             <div className="editor">
                 <FroalaEditorComponent tag='textarea' config={config} />
             </div>
-            <div id="image-tagging-results">
-                <h3>Image Tagging Analysis:</h3>
-                <ul>
-                    {tags.map(([key, value], index) => (
-                        <li key={index}>
-                            {key}: {value}
-                        </li>
-                    ))}
-                </ul>
-            </div>
+            <br/>
         </div>
     );
 }
