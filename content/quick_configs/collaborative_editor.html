@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Collaborative Editor Config - Froala</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/froala-editor@latest/css/froala_editor.pkgd.min.css" rel="stylesheet"
+    type="text/css" />
+  <link href="https://cdn.jsdelivr.net/npm/froala-editor@latest/css/froala_style.min.css" rel="stylesheet"
+    type="text/css" />
+
+  <style>
+    .config-demo-page {
+      min-height: 100vh;
+      background: var(--bg-light);
+    }
+
+    .config-header {
+      background: var(--gradient-primary);
+      color: white;
+      padding: 3rem 0;
+      padding: 3rem 0;
+      text-align: center;
+      position: relative;
+    }
+
+    .config-header .btn-config-container {
+      position: absolute;
+      top: 2rem;
+      right: 2rem;
+    }
+
+    .config-header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .config-header p {
+      font-size: 1.1rem;
+      opacity: 0.9;
+    }
+
+    .config-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 3rem 1rem;
+    }
+
+    .editor-container {
+      background: white;
+      border-radius: var(--radius-md);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow-md);
+    }
+
+    .config-code-container {
+      background: #1e1e1e;
+      border-radius: var(--radius-md);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      position: relative;
+    }
+
+    .config-code-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .config-code-title {
+      color: #fff;
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+
+    .copy-btn {
+      background: var(--primary-blue);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .copy-btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+
+    .copy-btn.copied {
+      background: #10b981;
+    }
+
+    .config-code {
+      color: #d4d4d4;
+      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      overflow-x: auto;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--primary-blue);
+      font-weight: 500;
+      margin-bottom: 2rem;
+      transition: all 0.3s ease;
+    }
+
+    .back-link:hover {
+      gap: 0.75rem;
+    }
+
+    .use-case-section {
+      background: white;
+      border-radius: var(--radius-md);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow-md);
+    }
+
+    .use-case-section h2 {
+      color: var(--text-dark);
+      margin-bottom: 1rem;
+    }
+
+    .use-case-section ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .use-case-section li {
+      padding: 0.5rem 0;
+      padding-left: 1.5rem;
+      position: relative;
+      color: var(--text-gray);
+    }
+
+    .use-case-section li:before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: var(--primary-blue);
+      font-weight: bold;
+    }
+
+    /* Normalize list indentation in Froala editor */
+    .fr-element ul,
+    .fr-element ol,
+    .fr-view ul,
+    .fr-view ol {
+        margin-left: 0 !important;
+        padding-left: 1.5em !important;
+    }
+  </style>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --froala-blue: #0098F7;
+    --froala-blue-hover: #0080d4;
+    --froala-dark: #373A3E;
+    --froala-text: #5A5D63;
+    --froala-light-bg: #F5F8FA;
+    --froala-border: #E0E4E8;
+    --froala-white: #FFFFFF;
+    --nav-height: 72px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--froala-white);
+    color: var(--froala-dark);
+  }
+
+  .navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: var(--froala-white);
+    border-bottom: 1px solid var(--froala-border);
+    height: var(--nav-height);
+    display: flex;
+    align-items: center;
+    padding: 0 40px;
+  }
+
+  .navbar-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 1240px;
+    margin: 0 auto;
+  }
+
+  .nav-logo {
+    text-decoration: none;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  .nav-logo .logo-text {
+    font-size: 28px;
+    font-weight: 800;
+    font-style: italic;
+    color: var(--froala-blue);
+    letter-spacing: -0.5px;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    list-style: none;
+  }
+
+  .nav-item { position: relative; }
+
+  .nav-item::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    height: 10px;
+  }
+
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 10px 14px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--froala-dark);
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    background: none;
+    font-family: 'Nunito', sans-serif;
+    transition: color 0.15s ease;
+    white-space: nowrap;
+  }
+
+  .nav-link:hover { color: var(--froala-blue); }
+
+  .nav-link .chevron {
+    width: 12px; height: 12px;
+    opacity: 0.45;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+
+  .nav-item:hover .chevron { transform: rotate(180deg); opacity: 0.7; }
+  .nav-item:hover > .nav-link { color: var(--froala-blue); }
+
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+
+  .btn-outline {
+    padding: 7px 22px;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    color: var(--froala-blue);
+    border: 2px solid var(--froala-blue);
+    border-radius: 4px;
+    text-decoration: none;
+    background: none;
+    transition: all 0.15s ease;
+  }
+
+  .btn-outline:hover { background: var(--froala-blue); color: var(--froala-white); }
+
+  .btn-filled {
+    padding: 9px 22px;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    color: var(--froala-white);
+    background: var(--froala-blue);
+    border: 2px solid var(--froala-blue);
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+
+  .btn-filled:hover { background: var(--froala-blue-hover); border-color: var(--froala-blue-hover); }
+
+  .cart-icon {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    color: var(--froala-dark);
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+
+  .cart-icon:hover { color: var(--froala-blue); }
+  .cart-icon svg { width: 22px; height: 22px; }
+
+  /* ── DROPDOWNS ── */
+  .dropdown-panel {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--froala-white);
+    border: 1px solid var(--froala-border);
+    border-radius: 6px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.04);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+  }
+
+  .nav-item:hover .dropdown-panel {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .dropdown-panel.size-wide { min-width: 680px; padding: 24px 28px; }
+  .dropdown-panel.size-med { min-width: 460px; padding: 24px 28px; }
+  .dropdown-panel.size-sm { min-width: 280px; padding: 14px 8px; }
+
+  .dd-grid { display: grid; gap: 28px; }
+  .dd-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+  .dd-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+  .dd-label {
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.9px;
+    color: #A0A4AA;
+    margin-bottom: 8px;
+    padding-left: 10px;
+  }
+
+  .dd-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 10px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: background 0.15s ease;
+  }
+
+  .dd-link:hover { background: var(--froala-light-bg); }
+
+  .dd-link .ico {
+    width: 34px; height: 34px;
+    border-radius: 6px;
+    background: var(--froala-light-bg);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s ease;
+  }
+
+  .dd-link:hover .ico { background: #E6F4FE; }
+
+  .dd-link .ico svg {
+    width: 17px; height: 17px;
+    color: var(--froala-text);
+    transition: color 0.15s ease;
+  }
+
+  .dd-link:hover .ico svg { color: var(--froala-blue); }
+
+  .dd-link .dd-text { display: flex; flex-direction: column; gap: 1px; }
+  .dd-link .dd-text .title { font-size: 14px; font-weight: 700; color: var(--froala-dark); }
+  .dd-link .dd-text .desc { font-size: 12px; font-weight: 400; color: var(--froala-text); }
+
+  .dd-simple {
+    display: block;
+    padding: 7px 12px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--froala-dark);
+    text-decoration: none;
+    border-radius: 5px;
+    transition: all 0.12s ease;
+  }
+
+  .dd-simple:hover { color: var(--froala-blue); background: var(--froala-light-bg); }
+
+  .dd-simple .ext-icon {
+    width: 11px; height: 11px;
+    vertical-align: middle;
+    margin-left: 3px;
+    opacity: 0.35;
+  }
+
+  .dd-simple .tag {
+    display: inline-block;
+    font-size: 9px; font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    background: #E6F4FE;
+    color: var(--froala-blue);
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
+  .dd-cta { color: var(--froala-blue); font-weight: 700; }
+
+  .dd-divider { height: 1px; background: var(--froala-border); margin: 8px 4px; }
+
+  .fw-strip { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--froala-border); }
+  .fw-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+
+  .fw-chip {
+    padding: 4px 10px;
+    font-size: 12px; font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    color: var(--froala-text);
+    background: var(--froala-light-bg);
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.12s ease;
+  }
+
+  .fw-chip:hover { background: #E6F4FE; color: var(--froala-blue); }
+
+  /* ── SOLUTIONS PANEL - wider layout ── */
+  .dropdown-panel.size-solutions {
+    min-width: 720px;
+    padding: 24px 28px;
+  }
+
+  /* Role cards in Solutions */
+  .dd-role-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 11px 10px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: background 0.15s ease;
+    margin-bottom: 2px;
+  }
+
+  .dd-role-card:hover { background: var(--froala-light-bg); }
+
+  .dd-role-card .ico {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    background: var(--froala-light-bg);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s ease;
+  }
+
+  .dd-role-card:hover .ico { background: #E6F4FE; }
+
+  .dd-role-card .ico svg {
+    width: 18px; height: 18px;
+    color: var(--froala-text);
+    transition: color 0.15s ease;
+  }
+
+  .dd-role-card:hover .ico svg { color: var(--froala-blue); }
+
+  .dd-role-card .dd-text { display: flex; flex-direction: column; gap: 2px; }
+  .dd-role-card .dd-text .title { font-size: 14px; font-weight: 700; color: var(--froala-dark); }
+  .dd-role-card .dd-text .desc { font-size: 12px; font-weight: 400; color: var(--froala-text); line-height: 1.4; }
+</style>
+</head>
+
+<body>
+  <div class="config-demo-page">
+    <div class="config-header">
+      <h1><i class="fa-solid fa-users"></i> Collaborative Editor</h1>
+      <p>Team editing with track changes, comments, and version control simulation</p>
+    </div>
+
+    <div class="config-content">
+      <div class="use-case-section">
+        <h2>Perfect For:</h2>
+        <ul>
+          <li>Team document collaboration and co-authoring</li>
+          <li>Editorial workflows with review processes</li>
+          <li>Legal document preparation and contracts</li>
+          <li>Academic collaborative writing</li>
+          <li>Project documentation with multiple contributors</li>
+        </ul>
+      </div>
+
+      <div class="editor-container">
+        <h2 style="margin-bottom: 1rem; color: var(--text-dark);">Try It Out</h2>
+        <div id="froala-editor">
+          <h1>Q1 2026 Marketing Strategy</h1>
+          <p><strong>Status:</strong> Draft - In Review</p>
+          <h2>Executive Summary</h2>
+          <p>This document outlines our comprehensive marketing strategy for the first quarter of 2026, focusing on
+            digital transformation and customer engagement.</p>
+          <h2>Key Objectives</h2>
+          <ul>
+            <li>Increase brand awareness by 30%</li>
+            <li>Launch new product line in Q1</li>
+            <li>Expand social media presence</li>
+          </ul>
+          <p><em>Note: This section needs review by the marketing team.</em></p>
+        </div>
+      </div>
+
+      
+                    <div class="config-explanation" style="background: rgba(0, 152, 247, 0.05); padding: 1.2rem; border-radius: 8px; margin-bottom: 1.5rem; border-left: 4px solid #0098f7;">
+                        <h4 style="margin-top: 0; color: #0f172a; margin-bottom: 0.5rem;"><i class="fa-solid fa-lightbulb" style="color: #0098f7; margin-right: 0.5rem;"></i>Why this configuration is chosen:</h4>
+                        <ul style="color: #334155; margin: 0; padding-left: 1.2rem; font-size: 0.95rem; line-height: 1.6;">
+                            <li style="margin-bottom: 0.3rem;"><strong>Unfettered Customization:</strong> Displays maximum formatting granularity via extensive <a href="https://froala.com/wysiwyg-editor/docs/plugins/paragraphstyle/" target="_blank" style="color: #0098f7; text-decoration: none; font-family: monospace; font-weight: bold;">paragraphStyle</a>, <a href="https://froala.com/wysiwyg-editor/docs/plugins/fontfamily/" target="_blank" style="color: #0098f7; text-decoration: none; font-family: monospace; font-weight: bold;">fontFamily</a> selections, and varied <a href="https://froala.com/wysiwyg-editor/docs/plugins/specialcharacters/" target="_blank" style="color: #0098f7; text-decoration: none; font-family: monospace; font-weight: bold;">specialCharacters</a> ensuring diverse contributor needs are met.</li>
+                            <li style="margin-bottom: 0.3rem;"><strong>Consistent Paste Normalization:</strong> Extensively uses <a href="https://froala.com/wysiwyg-editor/docs/options/#wordPasteModal" target="_blank" style="color: #0098f7; text-decoration: none; font-family: monospace; font-weight: bold;">wordPasteModal</a> to intercept copied content from varying sources, normalizing team contributions into a unified look.</li>
+                            <li><strong>Sticky Readability:</strong> Uses <a href="https://froala.com/wysiwyg-editor/docs/options/#toolbarSticky" target="_blank" style="color: #0098f7; text-decoration: none; font-family: monospace; font-weight: bold;">toolbarSticky</a> to ensure formatting tools stay glued to the viewport over the lifespan of extremely long, continuously co-authored documents.</li>
+                        </ul>
+                    </div>
+                    <div class="config-code-container">
+        <div class="config-code-header">
+          <div class="config-code-title">
+            <i class="fa-solid fa-code"></i> Configuration
+          </div>
+          <button class="copy-btn" onclick="copyConfig()">
+            <i class="fa-solid fa-copy"></i> Copy Config
+          </button>
+        </div>
+        <pre class="config-code"><code>const collaborativeEditorConfig = {
+  // Collaboration-focused plugins
+  pluginsEnabled: [
+    'align', 'colors', 'fontFamily', 'fontSize',
+    'paragraphFormat', 'paragraphStyle', 'lists',
+    'link', 'image', 'table', 'fullscreen',
+    'charCounter', 'wordCounter', 'quote',
+    'save', 'help', 'codeView',
+    'specialCharacters', 'wordPaste'
+  ],
+
+  // Comprehensive toolbar for collaboration
+  toolbarButtons: {
+    'moreText': {
+      'buttons': ['bold', 'italic', 'underline', 'strikeThrough',
+                  'subscript', 'superscript', 'fontFamily', 'fontSize',
+                  'textColor', 'backgroundColor', 'clearFormatting']
+    },
+    'moreParagraph': {
+      'buttons': ['alignLeft', 'alignCenter', 'alignRight', 'alignJustify',
+                  'formatOL', 'formatUL', 'paragraphFormat', 'paragraphStyle',
+                  'outdent', 'indent', 'quote']
+    },
+    'moreRich': {
+      'buttons': ['insertLink', 'insertImage', 'insertTable',
+                  'specialCharacters', 'insertHR']
+    },
+    'moreMisc': {
+      'buttons': ['undo', 'redo', 'fullscreen', 'save', 'html', 'help', 'selectAll']
+    }
+  },
+
+  // Height settings
+  heightMin: 500,
+
+  // Placeholder
+  placeholderText: 'Start collaborating on your document...',
+
+  // Character and word counter for analytics
+  charCounterCount: true,
+  wordCounterMax: -1,
+
+  // Paragraph formats
+  paragraphFormat: {
+    'N': 'Normal',
+    'H1': 'Heading 1',
+    'H2': 'Heading 2',
+    'H3': 'Heading 3',
+    'H4': 'Heading 4',
+    'PRE': 'Code'
+  },
+
+  // Paragraph styles for document structuring
+  paragraphStyles: {
+    'fr-text-gray': 'Muted Text',
+    'fr-text-bordered': 'Highlighted',
+    'fr-class-highlighted': 'Important'
+  },
+
+  // Track Changes Configuration
+  // Note: This requires the Track Changes plugin
+  // See: https://froala.com/wysiwyg-editor/docs/concepts/track-changes/
+  trackChangesEnabled: false, // Enable when implementing backend
+  showChangesEnabled: true,
+
+  // Save configuration with version tracking
+  saveURL: '/save_document',
+  saveInterval: 5000, // Auto-save every 5 seconds
+  saveParam: 'content',
+  saveMethod: 'POST',
+
+  // Image settings
+  imageEditButtons: ['imageReplace', 'imageAlign', 'imageCaption', 'imageRemove',
+                     'imageLink', 'imageAlt', 'imageSize'],
+  imageInsertButtons: ['imageBack', '|', 'imageUpload', 'imageByURL'],
+  imageMaxSize: 10 * 1024 * 1024, // 10MB
+  imageAllowedTypes: ['jpeg', 'jpg', 'png', 'gif'],
+
+  // Table settings
+  tableEditButtons: ['tableHeader', 'tableRemove', '|', 'tableRows', 'tableColumns',
+                     'tableStyle', '-', 'tableCells', 'tableCellBackground',
+                     'tableCellVerticalAlign', 'tableCellHorizontalAlign'],
+  tableStyles: {
+    'fr-table-bordered': 'Bordered',
+    'fr-table-striped': 'Striped'
+  },
+
+  // Link settings
+  linkEditButtons: ['linkOpen', 'linkEdit', 'linkRemove'],
+  linkInsertButtons: ['linkBack'],
+  linkAlwaysBlank: false,
+
+  // Quote settings
+  quoteButtons: ['quoteAdd', 'quoteRemove'],
+
+  // Special characters
+  specialCharactersSet: ['©', '®', '™', '§', '¶', '•', '—', '–', '"', '"', ''', '''],
+
+  // Word paste - preserve formatting for collaboration
+  wordPasteModal: true,
+  wordPasteKeepFormatting: true,
+  wordAllowedStyleProps: ['font-family', 'font-size', 'background', 'color',
+                          'width', 'text-align', 'vertical-align'],
+
+  // Font configuration
+  fontFamily: {
+    'Arial,Helvetica,sans-serif': 'Arial',
+    'Georgia,serif': 'Georgia',
+    'Times New Roman,Times,serif': 'Times New Roman',
+    'Courier New,Courier,monospace': 'Courier New'
+  },
+
+  // Font sizes
+  fontSize: ['8', '10', '12', '14', '16', '18', '20', '24', '30', '36'],
+
+  // Sticky toolbar for long documents
+  toolbarSticky: true,
+  toolbarStickyOffset: 0,
+
+  // Enable spellcheck
+  spellcheck: true,
+
+  // Events for collaboration features
+  events: {
+    'initialized': function () {
+      console.log('Collaborative Editor initialized');
+      // Initialize collaboration features here
+      // Example: Connect to WebSocket for real-time updates
+    },
+    'contentChanged': function () {
+      console.log('Content changed - broadcasting to collaborators');
+      // Broadcast changes to other users
+    },
+    'save.before': function (html) {
+      console.log('Saving document version...');
+      // Add version metadata
+      const timestamp = new Date().toISOString();
+      const user = getCurrentUser(); // Your function to get current user
+      return {
+        content: html,
+        timestamp: timestamp,
+        user: user
+      };
+    },
+    'save.after': function (data) {
+      console.log('Document saved - version created');
+      // Show save confirmation to user
+    }
+  }
+    <!-- Config Section Removed (Moved to Modal) -->
+  </div>
+
+    <!-- Config Modal -->
+    <div id="configModalOverlay" class="config-modal-overlay" onclick="closeConfigModal(event)">
+        <div class="config-modal">
+            <div class="config-modal-header">
+                <h2 class="config-modal-title">
+                    <i class="fa-solid fa-code"></i> Configuration
+                </h2>
+                <button class="config-modal-close" onclick="closeConfigModal(event)">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+            </div>
+            <div class="config-modal-body">
+                <div class="config-section">
+                    
+                    <div class="config-explanation" style="background: rgba(0, 152, 247, 0.05); padding: 1.2rem; border-radius: 8px; margin-bottom: 1.5rem; border-left: 4px solid #0098f7;">
+                        <h4 style="margin-top: 0; color: #0f172a; margin-bottom: 0.5rem;"><i class="fa-solid fa-lightbulb" style="color: #0098f7; margin-right: 0.5rem;"></i>Why this configuration is chosen:</h4>
+                        <ul style="color: #334155; margin: 0; padding-left: 1.2rem; font-size: 0.95rem; line-height: 1.6;">
+                            <li style="margin-bottom: 0.3rem;"><strong>Unfettered Customization:</strong> Displays maximum formatting granularity via extensive <a href="https://froala.com/wysiwyg-editor/docs/plugins/paragraphstyle/" target="_blank" style="color: #0098f7; text-decoration: none; font-family: monospace; font-weight: bold;">paragraphStyle</a>, <a href="https://froala.com/wysiwyg-editor/docs/plugins/fontfamily/" target="_blank" style="color: #0098f7; text-decoration: none; font-family: monospace; font-weight: bold;">fontFamily</a> selections, and varied <a href="https://froala.com/wysiwyg-editor/docs/plugins/specialcharacters/" target="_blank" style="color: #0098f7; text-decoration: none; font-family: monospace; font-weight: bold;">specialCharacters</a> ensuring diverse contributor needs are met.</li>
+                            <li style="margin-bottom: 0.3rem;"><strong>Consistent Paste Normalization:</strong> Extensively uses <a href="https://froala.com/wysiwyg-editor/docs/options/#wordPasteModal" target="_blank" style="color: #0098f7; text-decoration: none; font-family: monospace; font-weight: bold;">wordPasteModal</a> to intercept copied content from varying sources, normalizing team contributions into a unified look.</li>
+                            <li><strong>Sticky Readability:</strong> Uses <a href="https://froala.com/wysiwyg-editor/docs/options/#toolbarSticky" target="_blank" style="color: #0098f7; text-decoration: none; font-family: monospace; font-weight: bold;">toolbarSticky</a> to ensure formatting tools stay glued to the viewport over the lifespan of extremely long, continuously co-authored documents.</li>
+                        </ul>
+                    </div>
+                    <div class="config-code-container">
+                        <div class="config-code-header">
+                          <div class="config-code-title">
+                            <i class="fa-brands fa-js"></i> JavaScript Configuration
+                          </div>
+                          <button class="copy-btn" onclick="copyConfig()">
+                            <i class="fa-solid fa-copy"></i> Copy Config
+                          </button>
+                        </div>
+                        <pre class="config-code"><code>new FroalaEditor('#froala-editor', {
+  key: 'YOUR_LICENSE_KEY',
+  pluginsEnabled: [
+    'align', 'colors', 'fontFamily', 'fontSize',
+    'paragraphFormat', 'paragraphStyle', 'lists',
+    'link', 'image', 'table', 'fullscreen',
+    'charCounter', 'wordCounter', 'quote',
+    'save', 'help', 'codeView',
+    'specialCharacters', 'wordPaste'
+  ],
+  toolbarButtons: {
+    'moreText': {
+      'buttons': ['bold', 'italic', 'underline', 'strikeThrough',
+                  'subscript', 'superscript', 'fontFamily', 'fontSize',
+                  'textColor', 'backgroundColor', 'clearFormatting']
+    },
+    'moreParagraph': {
+      'buttons': ['alignLeft', 'alignCenter', 'alignRight', 'alignJustify',
+                  'formatOL', 'formatUL', 'paragraphFormat', 'paragraphStyle',
+                  'outdent', 'indent', 'quote']
+    },
+    'moreRich': {
+      'buttons': ['insertLink', 'insertImage', 'insertTable',
+                  'specialCharacters', 'insertHR']
+    },
+    'moreMisc': {
+      'buttons': ['undo', 'redo', 'fullscreen', 'save', 'html', 'help', 'selectAll']
+    }
+  },
+  heightMin: 500,
+  placeholderText: 'Start collaborating on your document...',
+  charCounterCount: true,
+  wordCounterMax: -1,
+  paragraphFormat: {
+    'N': 'Normal',
+    'H1': 'Heading 1',
+    'H2': 'Heading 2',
+    'H3': 'Heading 3',
+    'H4': 'Heading 4',
+    'PRE': 'Code'
+  },
+  paragraphStyles: {
+    'fr-text-gray': 'Muted Text',
+    'fr-text-bordered': 'Highlighted',
+    'fr-class-highlighted': 'Important'
+  },
+  saveInterval: 5000,
+  saveParam: 'content',
+  saveMethod: 'POST',
+  imageEditButtons: ['imageReplace', 'imageAlign', 'imageCaption', 'imageRemove',
+                     'imageLink', 'imageAlt', 'imageSize'],
+  imageInsertButtons: ['imageBack', '|', 'imageUpload', 'imageByURL'],
+  imageMaxSize: 10 * 1024 * 1024,
+  imageAllowedTypes: ['jpeg', 'jpg', 'png', 'gif'],
+  tableEditButtons: ['tableHeader', 'tableRemove', '|', 'tableRows', 'tableColumns',
+                     'tableStyle', '-', 'tableCells', 'tableCellBackground',
+                     'tableCellVerticalAlign', 'tableCellHorizontalAlign'],
+  tableStyles: {
+    'fr-table-bordered': 'Bordered',
+    'fr-table-striped': 'Striped'
+  },
+  linkEditButtons: ['linkOpen', 'linkEdit', 'linkRemove'],
+  linkInsertButtons: ['linkBack'],
+  linkAlwaysBlank: false,
+  quoteButtons: ['quoteAdd', 'quoteRemove'],
+  specialCharactersSet: ['©', '®', '™', '§', '¶', '•', '—', '–', '\u201c', '\u201d', '\u2018', '\u2019'],
+  wordPasteModal: true,
+  wordPasteKeepFormatting: true,
+  wordAllowedStyleProps: ['font-family', 'font-size', 'background', 'color',
+                          'width', 'text-align', 'vertical-align'],
+  fontFamily: {
+    'Arial,Helvetica,sans-serif': 'Arial',
+    'Georgia,serif': 'Georgia',
+    'Times New Roman,Times,serif': 'Times New Roman',
+    'Courier New,Courier,monospace': 'Courier New'
+  },
+  fontSize: ['8', '10', '12', '14', '16', '18', '20', '24', '30', '36'],
+  toolbarSticky: true,
+  toolbarStickyOffset: 0,
+  spellcheck: true
+});</code></pre>
+      </div>
+    </div>
+  </div>
+  </div>
+  </div>
+
+  <script src="config_utils.js"></script>
+
+  <script type="text/javascript"
+    src="https://cdn.jsdelivr.net/npm/froala-editor@latest/js/froala_editor.pkgd.min.js"></script>
+  <script type="text/javascript"
+    src="https://cdn.jsdelivr.net/npm/froala-editor@latest/js/plugins/align.min.js"></script>
+  <script type="text/javascript"
+    src="https://cdn.jsdelivr.net/npm/froala-editor@latest/js/plugins/char_counter.min.js"></script>
+  <script type="text/javascript"
+    src="https://cdn.jsdelivr.net/npm/froala-editor@latest/js/plugins/code_view.min.js"></script>
+  <script type="text/javascript"
+    src="https://cdn.jsdelivr.net/npm/froala-editor@latest/js/plugins/colors.min.js"></script>
+  <script type="text/javascript"
+    src="https://cdn.jsdelivr.net/npm/froala-editor@latest/js/plugins/font_family.min.js"></script>
+  <script type="text/javascript"
+    src="https://cdn.jsdelivr.net/npm/froala-editor@latest/js/plugins/font_size.min.js"></script>
+  <script type="text/javascript"
+    src="https://cdn.jsdelivr.net/npm/froala-editor@latest/js/plugins/fullscreen.min.js"></script>
+  <script type="text/javascript"
+    src="https://cdn.jsdelivr.net/npm/froala-editor@latest/js/plugins/help.min.js"></script>
+  <script type="text/javascript"
+    src="https://cdn.jsdelivr.net/npm/froala-editor@latest/js/plugins/image.min.js"></script>
+  <script type="text/javascript"
+    src="https://cdn.jsdelivr.net/npm/froala-editor@latest/js/plugins/link.min.js"></script>
+  <script type="text/javascript"
+    src="https://cdn.jsdelivr.net/npm/froala-editor@latest/js/plugins/lists.min.js"></script>
+  <script type="text/javascript"
+    src="https://cdn.jsdelivr.net/npm/froala-editor@latest/js/plugins/paragraph_format.min.js"></script>
+  <script type="text/javascript"
+    src="https://cdn.jsdelivr.net/npm/froala-editor@latest/js/plugins/paragraph_style.min.js"></script>
+  <script type="text/javascript"
+    src="https://cdn.jsdelivr.net/npm/froala-editor@latest/js/plugins/quote.min.js"></script>
+  <script type="text/javascript"
+    src="https://cdn.jsdelivr.net/npm/froala-editor@latest/js/plugins/save.min.js"></script>
+  <script type="text/javascript"
+    src="https://cdn.jsdelivr.net/npm/froala-editor@latest/js/plugins/special_characters.min.js"></script>
+  <script type="text/javascript"
+    src="https://cdn.jsdelivr.net/npm/froala-editor@latest/js/plugins/table.min.js"></script>
+  <script type="text/javascript"
+    src="https://cdn.jsdelivr.net/npm/froala-editor@latest/js/plugins/word_counter.min.js"></script>
+  <script type="text/javascript"
+    src="https://cdn.jsdelivr.net/npm/froala-editor@latest/js/plugins/word_paste.min.js"></script>
+
+  <script>
+    new FroalaEditor('#froala-editor', {
+      key: 'Lc2C1qC1D1D4C3qB12qC8tsE4B-8F3J3A6B8B5D5D2A2di1aaA4cA1lnE1F2nrXYb1VPUGRHYZNRJd1JVOOb1HAc1zSZC1KGD1D1D1A1F1I4A10B1C6E4==',
+      pluginsEnabled: [
+        'align', 'colors', 'fontFamily', 'fontSize',
+        'paragraphFormat', 'paragraphStyle', 'lists',
+        'link', 'image', 'table', 'fullscreen',
+        'charCounter', 'wordCounter', 'quote',
+        'save', 'help', 'codeView',
+        'specialCharacters', 'wordPaste'
+      ],
+      toolbarButtons: {
+        'moreText': {
+          'buttons': ['bold', 'italic', 'underline', 'strikeThrough',
+            'subscript', 'superscript', 'fontFamily', 'fontSize',
+            'textColor', 'backgroundColor', 'clearFormatting']
+        },
+        'moreParagraph': {
+          'buttons': ['alignLeft', 'alignCenter', 'alignRight', 'alignJustify',
+            'formatOL', 'formatUL', 'paragraphFormat', 'paragraphStyle',
+            'outdent', 'indent', 'quote']
+        },
+        'moreRich': {
+          'buttons': ['insertLink', 'insertImage', 'insertTable',
+            'specialCharacters', 'insertHR']
+        },
+        'moreMisc': {
+          'buttons': ['undo', 'redo', 'fullscreen', 'save', 'html', 'help', 'selectAll']
+        }
+      },
+      heightMin: 500,
+      placeholderText: 'Start collaborating on your document...',
+      charCounterCount: true,
+      wordCounterMax: -1,
+      paragraphFormat: {
+        'N': 'Normal',
+        'H1': 'Heading 1',
+        'H2': 'Heading 2',
+        'H3': 'Heading 3',
+        'H4': 'Heading 4',
+        'PRE': 'Code'
+      },
+      paragraphStyles: {
+        'fr-text-gray': 'Muted Text',
+        'fr-text-bordered': 'Highlighted',
+        'fr-class-highlighted': 'Important'
+      },
+      saveInterval: 5000,
+      saveParam: 'content',
+      saveMethod: 'POST',
+      imageEditButtons: ['imageReplace', 'imageAlign', 'imageCaption', 'imageRemove',
+        'imageLink', 'imageAlt', 'imageSize'],
+      imageInsertButtons: ['imageBack', '|', 'imageUpload', 'imageByURL'],
+      imageMaxSize: 10 * 1024 * 1024,
+      imageAllowedTypes: ['jpeg', 'jpg', 'png', 'gif'],
+      tableEditButtons: ['tableHeader', 'tableRemove', '|', 'tableRows', 'tableColumns',
+        'tableStyle', '-', 'tableCells', 'tableCellBackground',
+        'tableCellVerticalAlign', 'tableCellHorizontalAlign'],
+      tableStyles: {
+        'fr-table-bordered': 'Bordered',
+        'fr-table-striped': 'Striped'
+      },
+      linkEditButtons: ['linkOpen', 'linkEdit', 'linkRemove'],
+      linkInsertButtons: ['linkBack'],
+      linkAlwaysBlank: false,
+      quoteButtons: ['quoteAdd', 'quoteRemove'],
+      specialCharactersSet: ['©', '®', '™', '§', '¶', '•', '—', '–', '“', '”', '‘', '’'],
+      wordPasteModal: true,
+      wordPasteKeepFormatting: true,
+      wordAllowedStyleProps: ['font-family', 'font-size', 'background', 'color',
+        'width', 'text-align', 'vertical-align'],
+      fontFamily: {
+        'Arial,Helvetica,sans-serif': 'Arial',
+        'Georgia,serif': 'Georgia',
+        'Times New Roman,Times,serif': 'Times New Roman',
+        'Courier New,Courier,monospace': 'Courier New'
+      },
+      fontSize: ['8', '10', '12', '14', '16', '18', '20', '24', '30', '36'],
+      toolbarSticky: true,
+      toolbarStickyOffset: 0,
+      spellcheck: true
+    });
+
+    function copyConfig() {
+      const configText = document.querySelector('.config-code code').textContent;
+      navigator.clipboard.writeText(configText).then(() => {
+        const btn = document.querySelector('.copy-btn');
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.innerHTML = '<i class="fa-solid fa-copy"></i> Copy Config';
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support Ticket Editor - Froala Demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/froala-editor@latest/css/froala_editor.pkgd.min.css" rel="stylesheet"
+        type="text/css" />
+    <link href="https://cdn.jsdelivr.net/npm/froala-editor@latest/css/froala_style.min.css" rel="stylesheet"
+        type="text/css" />
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background: #f8f9fa;
+        }
+
+        /* Support Desk Layout */
+        .support-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .support-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            z-index: 100;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .support-logo {
+            font-size: 1.3rem;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .support-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 0.5rem 1.25rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: #6b7280;
+        }
+
+        .btn-ghost:hover {
+            background: #f3f4f6;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 145, 235, 0.4);
+        }
+
+        /* Ticket Sidebar */
+        .ticket-sidebar {
+            position: fixed;
+            left: 0;
+            top: 60px;
+            width: 280px;
+            height: calc(100vh - 60px);
+            background: white;
+            border-right: 1px solid #e5e7eb;
+            padding: 1.5rem 0;
+            overflow-y: auto;
+        }
+
+        .sidebar-section {
+            margin-bottom: 1.5rem;
+            padding: 0 1.5rem;
+        }
+
+        .sidebar-section h4 {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #9ca3af;
+            margin-bottom: 0.75rem;
+        }
+
+        .ticket-item {
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+
+        .ticket-item:hover {
+            background: #f3f4f6;
+        }
+
+        .ticket-item.active {
+            background: rgba(0, 145, 235, 0.1);
+            border-color: var(--primary-blue);
+        }
+
+        .ticket-number {
+            font-size: 0.8rem;
+            color: var(--primary-blue);
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .ticket-subject {
+            font-size: 0.9rem;
+            color: #1f2937;
+            margin-bottom: 0.25rem;
+            font-weight: 500;
+        }
+
+        .ticket-preview {
+            font-size: 0.8rem;
+            color: #6b7280;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-top: 0.5rem;
+        }
+
+        .status-open {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-resolved {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        /* Main Content */
+        .support-main {
+            flex: 1;
+            margin-top: 60px;
+            margin-left: 280px;
+            padding: 3rem;
+            max-width: 1000px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            gap: 0.5rem;
+            color: var(--primary-blue);
+            font-weight: 500;
+            font-weight: 500;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            gap: 0.75rem;
+        }
+
+        /* Ticket Header */
+        .ticket-header {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        .ticket-id {
+            font-size: 0.9rem;
+            color: var(--primary-blue);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .ticket-title {
+            width: 100%;
+            border: none;
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            padding: 0;
+            outline: none;
+            color: #1f2937;
+        }
+
+        .ticket-meta {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            font-size: 0.9rem;
+            color: #6b7280;
+            padding-top: 1rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .priority-high {
+            color: #dc2626;
+            font-weight: 600;
+        }
+
+        .priority-medium {
+            color: #f59e0b;
+            font-weight: 600;
+        }
+
+        .priority-low {
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        /* Conversation Thread */
+        .conversation-thread {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        .thread-item {
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            background: #f9fafb;
+        }
+
+        .thread-item.customer {
+            background: #eff6ff;
+        }
+
+        .thread-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .thread-author {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .author-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .author-info h5 {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #1f2937;
+        }
+
+        .author-info p {
+            margin: 0;
+            font-size: 0.8rem;
+            color: #6b7280;
+        }
+
+        .thread-time {
+            font-size: 0.8rem;
+            color: #9ca3af;
+        }
+
+        .thread-content {
+            color: #4b5563;
+            line-height: 1.6;
+        }
+
+        /* Response Editor */
+        .response-container {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .section-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #9ca3af;
+            margin-bottom: 1rem;
+        }
+
+        .quick-responses {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .quick-response-btn {
+            padding: 0.5rem 1rem;
+            background: #f3f4f6;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .quick-response-btn:hover {
+            background: #e5e7eb;
+        }
+
+        /* Customer Info Panel */
+        .customer-panel {
+            position: fixed;
+            right: 0;
+            top: 60px;
+            width: 300px;
+            height: calc(100vh - 60px);
+            background: white;
+            border-left: 1px solid #e5e7eb;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .customer-section {
+            margin-bottom: 2rem;
+        }
+
+        .customer-section h3 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #9ca3af;
+            margin-bottom: 1rem;
+        }
+
+        .customer-avatar-large {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 2rem;
+            margin: 0 auto 1rem;
+        }
+
+        .customer-name {
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .customer-email {
+            text-align: center;
+            font-size: 0.85rem;
+            color: #6b7280;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .info-label {
+            font-size: 0.85rem;
+            color: #6b7280;
+        }
+
+        .info-value {
+            font-size: 0.85rem;
+            color: #1f2937;
+            font-weight: 500;
+        }
+
+        /* Config Section */
+        .config-section {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .config-code-container {
+            background: #1e1e1e;
+            border-radius: 8px;
+            padding: 1.5rem;
+            position: relative;
+            margin-top: 1rem;
+        }
+
+        .config-code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .config-code-title {
+            color: #fff;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .copy-btn {
+            background: #f857a6;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+        }
+
+        .copy-btn:hover {
+            background: #e84694;
+            transform: translateY(-2px);
+        }
+
+        .copy-btn.copied {
+            background: #10b981;
+        }
+
+        .config-code {
+            color: #d4d4d4;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            overflow-x: auto;
+        }
+
+        @media (max-width: 1400px) {
+            .customer-panel {
+                display: none;
+            }
+
+            .support-main {
+                max-width: 900px;
+            }
+        }
+
+        /* Normalize list indentation in Froala editor */
+        .fr-element ul,
+        .fr-element ol,
+        .fr-view ul,
+        .fr-view ol {
+            margin-left: 0 !important;
+            padding-left: 1.5em !important;
+        }
+    </style>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --froala-blue: #0098F7;
+    --froala-blue-hover: #0080d4;
+    --froala-dark: #373A3E;
+    --froala-text: #5A5D63;
+    --froala-light-bg: #F5F8FA;
+    --froala-border: #E0E4E8;
+    --froala-white: #FFFFFF;
+    --nav-height: 72px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--froala-white);
+    color: var(--froala-dark);
+  }
+
+  .navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: var(--froala-white);
+    border-bottom: 1px solid var(--froala-border);
+    height: var(--nav-height);
+    display: flex;
+    align-items: center;
+    padding: 0 40px;
+  }
+
+  .navbar-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 1240px;
+    margin: 0 auto;
+  }
+
+  .nav-logo {
+    text-decoration: none;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  .nav-logo .logo-text {
+    font-size: 28px;
+    font-weight: 800;
+    font-style: italic;
+    color: var(--froala-blue);
+    letter-spacing: -0.5px;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    list-style: none;
+  }
+
+  .nav-item { position: relative; }
+
+  .nav-item::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    height: 10px;
+  }
+
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 10px 14px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--froala-dark);
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    background: none;
+    font-family: 'Nunito', sans-serif;
+    transition: color 0.15s ease;
+    white-space: nowrap;
+  }
+
+  .nav-link:hover { color: var(--froala-blue); }
+
+  .nav-link .chevron {
+    width: 12px; height: 12px;
+    opacity: 0.45;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+
+  .nav-item:hover .chevron { transform: rotate(180deg); opacity: 0.7; }
+  .nav-item:hover > .nav-link { color: var(--froala-blue); }
+
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+
+  .btn-outline {
+    padding: 7px 22px;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    color: var(--froala-blue);
+    border: 2px solid var(--froala-blue);
+    border-radius: 4px;
+    text-decoration: none;
+    background: none;
+    transition: all 0.15s ease;
+  }
+
+  .btn-outline:hover { background: var(--froala-blue); color: var(--froala-white); }
+
+  .btn-filled {
+    padding: 9px 22px;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    color: var(--froala-white);
+    background: var(--froala-blue);
+    border: 2px solid var(--froala-blue);
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+
+  .btn-filled:hover { background: var(--froala-blue-hover); border-color: var(--froala-blue-hover); }
+
+  .cart-icon {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    color: var(--froala-dark);
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+
+  .cart-icon:hover { color: var(--froala-blue); }
+  .cart-icon svg { width: 22px; height: 22px; }
+
+  /* ── DROPDOWNS ── */
+  .dropdown-panel {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--froala-white);
+    border: 1px solid var(--froala-border);
+    border-radius: 6px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.04);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+  }
+
+  .nav-item:hover .dropdown-panel {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .dropdown-panel.size-wide { min-width: 680px; padding: 24px 28px; }
+  .dropdown-panel.size-med { min-width: 460px; padding: 24px 28px; }
+  .dropdown-panel.size-sm { min-width: 280px; padding: 14px 8px; }
+
+  .dd-grid { display: grid; gap: 28px; }
+  .dd-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+  .dd-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+  .dd-label {
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.9px;
+    color: #A0A4AA;
+    margin-bottom: 8px;
+    padding-left: 10px;
+  }
+
+  .dd-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 10px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: background 0.15s ease;
+  }
+
+  .dd-link:hover { background: var(--froala-light-bg); }
+
+  .dd-link .ico {
+    width: 34px; height: 34px;
+    border-radius: 6px;
+    background: var(--froala-light-bg);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s ease;
+  }
+
+  .dd-link:hover .ico { background: #E6F4FE; }
+
+  .dd-link .ico svg {
+    width: 17px; height: 17px;
+    color: var(--froala-text);
+    transition: color 0.15s ease;
+  }
+
+  .dd-link:hover .ico svg { color: var(--froala-blue); }
+
+  .dd-link .dd-text { display: flex; flex-direction: column; gap: 1px; }
+  .dd-link .dd-text .title { font-size: 14px; font-weight: 700; color: var(--froala-dark); }
+  .dd-link .dd-text .desc { font-size: 12px; font-weight: 400; color: var(--froala-text); }
+
+  .dd-simple {
+    display: block;
+    padding: 7px 12px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--froala-dark);
+    text-decoration: none;
+    border-radius: 5px;
+    transition: all 0.12s ease;
+  }
+
+  .dd-simple:hover { color: var(--froala-blue); background: var(--froala-light-bg); }
+
+  .dd-simple .ext-icon {
+    width: 11px; height: 11px;
+    vertical-align: middle;
+    margin-left: 3px;
+    opacity: 0.35;
+  }
+
+  .dd-simple .tag {
+    display: inline-block;
+    font-size: 9px; font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    background: #E6F4FE;
+    color: var(--froala-blue);
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
+  .dd-cta { color: var(--froala-blue); font-weight: 700; }
+
+  .dd-divider { height: 1px; background: var(--froala-border); margin: 8px 4px; }
+
+  .fw-strip { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--froala-border); }
+  .fw-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+
+  .fw-chip {
+    padding: 4px 10px;
+    font-size: 12px; font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    color: var(--froala-text);
+    background: var(--froala-light-bg);
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.12s ease;
+  }
+
+  .fw-chip:hover { background: #E6F4FE; color: var(--froala-blue); }
+
+  /* ── SOLUTIONS PANEL - wider layout ── */
+  .dropdown-panel.size-solutions {
+    min-width: 720px;
+    padding: 24px 28px;
+  }
+
+  /* Role cards in Solutions */
+  .dd-role-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 11px 10px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: background 0.15s ease;
+    margin-bottom: 2px;
+  }
+
+  .dd-role-card:hover { background: var(--froala-light-bg); }
+
+  .dd-role-card .ico {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    background: var(--froala-light-bg);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s ease;
+  }
+
+  .dd-role-card:hover .ico { background: #E6F4FE; }
+
+  .dd-role-card .ico svg {
+    width: 18px; height: 18px;
+    color: var(--froala-text);
+    transition: color 0.15s ease;
+  }
+
+  .dd-role-card:hover .ico svg { color: var(--froala-blue); }
+
+  .dd-role-card .dd-text { display: flex; flex-direction: column; gap: 2px; }
+  .dd-role-card .dd-text .title { font-size: 14px; font-weight: 700; color: var(--froala-dark); }
+  .dd-role-card .dd-text .desc { font-size: 12px; font-weight: 400; color: var(--froala-text); line-height: 1.4; }
+</style>
+</head>
+
+<body>
+    <!-- Header -->
+    <div class="support-header">
+        <div class="support-logo">
+            <i class="fa-solid fa-headset"></i> SupportDesk Pro
+        </div>
+        <div class="support-actions">
+            <button class="btn btn-ghost" onclick="alert('Ticket saved')">
+                <i class="fa-solid fa-save"></i> Save
+            </button>
+            <button class="btn btn-primary" onclick="alert('Response sent!')">
+                <i class="fa-solid fa-paper-plane"></i> Send Response
+            </button>
+        </div>
+    </div>
+
+    <div class="support-wrapper">
+        <!-- Ticket Sidebar -->
+        <div class="ticket-sidebar">
+            <div class="sidebar-section">
+                <h4>Open Tickets</h4>
+                <div class="ticket-item active">
+                    <div class="ticket-number">TICKET-12345</div>
+                    <div class="ticket-subject">Unable to access dashboard</div>
+                    <div class="ticket-preview">I'm getting an error when trying to...</div>
+                    <span class="status-badge status-open">Open</span>
+                </div>
+                <div class="ticket-item">
+                    <div class="ticket-number">TICKET-12344</div>
+                    <div class="ticket-subject">Password reset not working</div>
+                    <div class="ticket-preview">The password reset link is not...</div>
+                    <span class="status-badge status-pending">Pending</span>
+                </div>
+                <div class="ticket-item">
+                    <div class="ticket-number">TICKET-12343</div>
+                    <div class="ticket-subject">Billing question</div>
+                    <div class="ticket-preview">Can you explain the charges on...</div>
+                    <span class="status-badge status-open">Open</span>
+                </div>
+            </div>
+            <div class="sidebar-section">
+                <h4>Recently Resolved</h4>
+                <div class="ticket-item">
+                    <div class="ticket-number">TICKET-12342</div>
+                    <div class="ticket-subject">Feature request</div>
+                    <div class="ticket-preview">Would love to see dark mode...</div>
+                    <span class="status-badge status-resolved">Resolved</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="support-main">
+            <!-- Ticket Header -->
+            <div class="ticket-header">
+                <div class="ticket-id">TICKET-12345 • Created 2 hours ago</div>
+                <input type="text" class="ticket-title" placeholder="Ticket subject..."
+                    value="Unable to access dashboard">
+
+                <div class="ticket-meta">
+                    <div class="meta-item">
+                        <i class="fa-solid fa-user"></i>
+                        <span>John Smith</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fa-solid fa-tag"></i>
+                        <span>Technical Support</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fa-solid fa-flag"></i>
+                        <span class="priority-high">High Priority</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span>Open</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Conversation Thread -->
+            <div class="conversation-thread">
+                <div class="section-label">Conversation History</div>
+
+                <div class="thread-item customer">
+                    <div class="thread-header">
+                        <div class="thread-author">
+                            <div class="author-avatar">JS</div>
+                            <div class="author-info">
+                                <h5>John Smith</h5>
+                                <p>Customer</p>
+                            </div>
+                        </div>
+                        <div class="thread-time">2 hours ago</div>
+                    </div>
+                    <div class="thread-content">
+                        <p>Hello,</p>
+                        <p>I'm having trouble accessing my dashboard. Every time I try to log in, I get an error message
+                            saying "Session expired" even though I just logged in. I've tried clearing my browser cache
+                            and using a different browser, but the issue persists.</p>
+                        <p>Can you please help me resolve this issue? I need to access my account urgently.</p>
+                        <p>Thank you!</p>
+                    </div>
+                </div>
+
+                <div class="thread-item">
+                    <div class="thread-header">
+                        <div class="thread-author">
+                            <div class="author-avatar">SA</div>
+                            <div class="author-info">
+                                <h5>Support Agent</h5>
+                                <p>Agent</p>
+                            </div>
+                        </div>
+                        <div class="thread-time">1 hour ago</div>
+                    </div>
+                    <div class="thread-content">
+                        <p>Hi John,</p>
+                        <p>Thank you for reaching out to us. I'm sorry to hear you're experiencing this issue. I've
+                            checked your account and can see the session errors in our logs.</p>
+                        <p>I'm currently investigating this and will have a solution for you shortly.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Response Editor -->
+            <div class="response-container">
+                <div class="section-label">Your Response</div>
+
+                <div class="quick-responses">
+                    <button class="quick-response-btn">
+                        <i class="fa-solid fa-bolt"></i> Greeting
+                    </button>
+                    <button class="quick-response-btn">
+                        <i class="fa-solid fa-bolt"></i> Request Info
+                    </button>
+                    <button class="quick-response-btn">
+                        <i class="fa-solid fa-bolt"></i> Solution Provided
+                    </button>
+                    <button class="quick-response-btn">
+                        <i class="fa-solid fa-bolt"></i> Closing
+                    </button>
+                </div>
+
+                <div id="froala-editor">
+                    <p>Hello John,</p>
+                    <p>Thank you for your patience. I've identified and resolved the issue with your account. Here's
+                        what happened and what I've done to fix it:</p>
+
+                    <h4>Issue Summary</h4>
+                    <p>The session timeout error was caused by a synchronization issue between our authentication
+                        servers. This affected a small number of accounts during our recent system update.</p>
+
+                    <h4>Solution Implemented</h4>
+                    <ol>
+                        <li>Reset your session tokens on our backend</li>
+                        <li>Cleared any cached authentication data</li>
+                        <li>Verified your account permissions are correct</li>
+                    </ol>
+
+                    <h4>Next Steps</h4>
+                    <ul>
+                        <li>Please try logging in again using this <a href="#">password reset link</a></li>
+                        <li>Clear your browser cache one more time</li>
+                        <li>If the issue persists, please let me know immediately</li>
+                    </ul>
+
+                    <p>You should now be able to access your dashboard without any issues. Please confirm once you've
+                        successfully logged in.</p>
+
+                    <p>If you have any other questions or concerns, feel free to reach out!</p>
+
+                    <p>Best regards,<br>
+                        Support Team<br>
+                        SupportDesk Pro</p>
+                </div>
+            </div>
+
+
+            <!-- Config Section Removed (Moved to Modal) -->
+        </div>
+    </div>
+
+    <!-- Config Modal -->
+    <div id="configModalOverlay" class="config-modal-overlay" onclick="closeConfigModal(event)">
+        <div class="config-modal">
+            <div class="config-modal-header">
+                <h2 class="config-modal-title">
+                    <i class="fa-solid fa-code"></i> Configuration
+                </h2>
+                <button class="config-modal-close" onclick="closeConfigModal(event)">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+            </div>
+            <div class="config-modal-body">
+                <div class="config-section">
+                    <h2 style="margin-top: 0; color: #1f2937;">Froala Configuration for Support Tickets</h2>
+                    <p style="color: #6b7280; margin-bottom: 1.5rem;">This demo uses the following Froala Editor
+                        configuration optimized
+                        for support ticket responses:</p>
+
+                    
+                    <div class="config-explanation" style="background: rgba(0, 152, 247, 0.05); padding: 1.2rem; border-radius: 8px; margin-bottom: 1.5rem; border-left: 4px solid #0098f7;">
+                        <h4 style="margin-top: 0; color: #0f172a; margin-bottom: 0.5rem;"><i class="fa-solid fa-lightbulb" style="color: #0098f7; margin-right: 0.5rem;"></i>Why this configuration is chosen:</h4>
+                        <ul style="color: #334155; margin: 0; padding-left: 1.2rem; font-size: 0.95rem; line-height: 1.6;">
+                            <li style="margin-bottom: 0.3rem;"><strong>Diagnostic Attachments:</strong> Critically utilizes the file plugin alongside <a href="https://froala.com/wysiwyg-editor/docs/options/#fileAllowedTypes" target="_blank" style="color: #0098f7; text-decoration: none; font-family: monospace; font-weight: bold;">fileAllowedTypes</a> so users can seamlessly upload system logs, crash dumps, and screenshot documentation inside the helpdesk.</li>
+                            <li style="margin-bottom: 0.3rem;"><strong>Clear Guidance:</strong> Simplifies formatting options to prevent visual noise while retaining lists and quotes, allowing support agents to clearly map out resolution steps.</li>
+                            <li><strong>Quality Control:</strong> Incorporates aggressive <a href="https://froala.com/wysiwyg-editor/docs/options/#spellcheck" target="_blank" style="color: #0098f7; text-decoration: none; font-family: monospace; font-weight: bold;">spellcheck</a> features natively to ensure all customer-facing communications remain professional and flawless.</li>
+                        </ul>
+                    </div>
+                    <div class="config-code-container">
+                        <div class="config-code-header">
+                            <div class="config-code-title">
+                                <i class="fa-brands fa-js"></i> JavaScript Configuration
+                            </div>
+                            <button class="copy-btn" onclick="copyConfig()">
+                                <i class="fa-solid fa-copy"></i> Copy Config
+                            </button>
+                        </div>
+                        <pre class="config-code"><code>new FroalaEditor('#froala-editor', {
+  key: 'YOUR_LICENSE_KEY',
+  pluginsEnabled: [
+    'align', 'colors', 'fontSize',
+    'paragraphFormat', 'lists',
+    'link', 'image', 'file',
+    'table', 'charCounter', 'wordCounter',
+    'quote', 'emoticons', 'specialCharacters',
+    'save'
+  ],
+  toolbarButtons: {
+    'moreText': {
+      'buttons': ['bold', 'italic', 'underline',
+                  'fontSize', 'textColor', 'clearFormatting']
+    },
+    'moreParagraph': {
+      'buttons': ['alignLeft', 'alignCenter', 'alignRight',
+                  'formatOL', 'formatUL', 'paragraphFormat',
+                  'outdent', 'indent', 'quote']
+    },
+    'moreRich': {
+      'buttons': ['insertLink', 'insertImage', 'insertFile',
+                  'insertTable', 'emoticons', 'specialCharacters', 'insertHR']
+    },
+    'moreMisc': {
+      'buttons': ['undo', 'redo', 'save', 'selectAll']
+    }
+  },
+  heightMin: 300,
+  heightMax: 500,
+  placeholderText: 'Type your response...',
+  charCounterCount: true,
+  charCounterMax: 5000,
+  wordCounterMax: -1,
+  paragraphFormat: {
+    'N': 'Normal',
+    'H4': 'Heading',
+    'PRE': 'Code'
+  },
+  fontSize: ['12', '14', '16', '18'],
+  imageEditButtons: ['imageReplace', 'imageAlign', 'imageRemove',
+                     'imageAlt', 'imageSize'],
+  imageInsertButtons: ['imageBack', '|', 'imageUpload', 'imageByURL'],
+  imageMaxSize: 5 * 1024 * 1024,
+  imageAllowedTypes: ['jpeg', 'jpg', 'png', 'gif'],
+  fileInsertButtons: ['fileBack', '|', 'fileUpload'],
+  fileMaxSize: 10 * 1024 * 1024,
+  fileAllowedTypes: ['*'],
+  fileUseSelectedText: true,
+  tableEditButtons: ['tableHeader', 'tableRemove', '|', 'tableRows', 'tableColumns',
+                     'tableStyle', '-', 'tableCells'],
+  tableStyles: {
+    'fr-table-bordered': 'Bordered'
+  },
+  linkEditButtons: ['linkOpen', 'linkEdit', 'linkRemove'],
+  linkInsertButtons: ['linkBack'],
+  linkAlwaysBlank: true,
+  linkAutoPrefix: 'https://',
+  quoteButtons: ['quoteAdd', 'quoteRemove'],
+  emoticonsStep: 8,
+  emoticonsUseImage: true,
+  saveParam: 'content',
+  saveMethod: 'POST',
+  pastePlain: false,
+  pasteDeniedTags: ['script', 'style'],
+  toolbarSticky: false,
+  enter: FroalaEditor.ENTER_P,
+  spellcheck: true,
+  specialCharactersSet: ['©', '®', '™', '→', '✓', '•']
+});</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="config_utils.js"></script>
+    <!-- Customer Info Panel -->
+    <div class="customer-panel">
+        <div class="customer-section">
+            <div class="customer-avatar-large">JS</div>
+            <div class="customer-name">John Smith</div>
+            <div class="customer-email">john.smith@example.com</div>
+        </div>
+
+        <div class="customer-section">
+            <h3>Customer Details</h3>
+            <div class="info-row">
+                <span class="info-label">Customer ID</span>
+                <span class="info-value">#CU-8472</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Member Since</span>
+                <span class="info-value">Jan 2026</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Plan</span>
+                <span class="info-value">Pro</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Total Tickets</span>
+                <span class="info-value">8</span>
+            </div>
+        </div>
+
+        <div class="customer-section">
+            <h3>Ticket Details</h3>
+            <div class="info-row">
+                <span class="info-label">Priority</span>
+                <span class="info-value priority-high">High</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Category</span>
+                <span class="info-value">Technical</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Assigned To</span>
+                <span class="info-value">Support Agent</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">SLA Status</span>
+                <span class="info-value">On Track</span>
+            </div>
+        </div>
+
+        <div class="customer-section">
+            <h3>Actions</h3>
+            <button class="btn btn-ghost" style="width: 100%; margin-bottom: 0.5rem;">
+                <i class="fa-solid fa-user-plus"></i> Assign Agent
+            </button>
+            <button class="btn btn-ghost" style="width: 100%; margin-bottom: 0.5rem;">
+                <i class="fa-solid fa-tag"></i> Change Category
+            </button>
+            <button class="btn btn-ghost" style="width: 100%; margin-bottom: 0.5rem;">
+                <i class="fa-solid fa-flag"></i> Set Priority
+            </button>
+            <button class="btn btn-ghost" style="width: 100%;">
+                <i class="fa-solid fa-check-circle"></i> Mark Resolved
+            </button>
+        </div>
+    </div>
+    </div>
+
+    <script type="text/javascript"
+        src="https://cdn.jsdelivr.net/npm/froala-editor@latest/js/froala_editor.pkgd.min.js"></script>
+    <script>
+        new FroalaEditor('#froala-editor', {
+            key: 'Lc2C1qC1D1D4C3qB12qC8tsE4B-8F3J3A6B8B5D5D2A2di1aaA4cA1lnE1F2nrXYb1VPUGRHYZNRJd1JVOOb1HAc1zSZC1KGD1D1D1A1F1I4A10B1C6E4==',
+            pluginsEnabled: [
+                'align', 'colors', 'fontSize',
+                'paragraphFormat', 'lists',
+                'link', 'image', 'file',
+                'table', 'charCounter', 'wordCounter',
+                'quote', 'emoticons', 'specialCharacters',
+                'save'
+            ],
+            toolbarButtons: {
+                'moreText': {
+                    'buttons': ['bold', 'italic', 'underline',
+                        'fontSize', 'textColor', 'clearFormatting']
+                },
+                'moreParagraph': {
+                    'buttons': ['alignLeft', 'alignCenter', 'alignRight',
+                        'formatOL', 'formatUL', 'paragraphFormat',
+                        'outdent', 'indent', 'quote']
+                },
+                'moreRich': {
+                    'buttons': ['insertLink', 'insertImage', 'insertFile',
+                        'insertTable', 'emoticons', 'specialCharacters', 'insertHR']
+                },
+                'moreMisc': {
+                    'buttons': ['undo', 'redo', 'save', 'selectAll']
+                }
+            },
+            heightMin: 300,
+            heightMax: 500,
+            placeholderText: 'Type your response...',
+            charCounterCount: true,
+            charCounterMax: 5000,
+            wordCounterMax: -1,
+            paragraphFormat: {
+                'N': 'Normal',
+                'H4': 'Heading',
+                'PRE': 'Code'
+            },
+            fontSize: ['12', '14', '16', '18'],
+            imageEditButtons: ['imageReplace', 'imageAlign', 'imageRemove',
+                'imageAlt', 'imageSize'],
+            imageInsertButtons: ['imageBack', '|', 'imageUpload', 'imageByURL'],
+            imageMaxSize: 5 * 1024 * 1024,
+            imageAllowedTypes: ['jpeg', 'jpg', 'png', 'gif'],
+            fileInsertButtons: ['fileBack', '|', 'fileUpload'],
+            fileMaxSize: 10 * 1024 * 1024,
+            fileAllowedTypes: ['*'],
+            fileUseSelectedText: true,
+            tableEditButtons: ['tableHeader', 'tableRemove', '|', 'tableRows', 'tableColumns',
+                'tableStyle', '-', 'tableCells'],
+            tableStyles: {
+                'fr-table-bordered': 'Bordered'
+            },
+            linkEditButtons: ['linkOpen', 'linkEdit', 'linkRemove'],
+            linkInsertButtons: ['linkBack'],
+            linkAlwaysBlank: true,
+            linkAutoPrefix: 'https://',
+            quoteButtons: ['quoteAdd', 'quoteRemove'],
+            emoticonsStep: 8,
+            emoticonsUseImage: true,
+            saveParam: 'content',
+            saveMethod: 'POST',
+            pastePlain: false,
+            pasteDeniedTags: ['script', 'style'],
+            toolbarSticky: false,
+            enter: FroalaEditor.ENTER_P,
+            spellcheck: true,
+            specialCharactersSet: ['©', '®', '™', '→', '✓', '•']
+        });
+
+        function copyConfig() {
+            const configText = document.querySelector('.config-code code').textContent;
+            navigator.clipboard.writeText(configText).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fa-solid fa-copy"></i> Copy Config';
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+
+</html>

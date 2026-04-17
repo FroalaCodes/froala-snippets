@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Post Editor - Froala Demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/froala-editor@latest/css/froala_editor.pkgd.min.css" rel="stylesheet"
+        type="text/css" />
+    <link href="https://cdn.jsdelivr.net/npm/froala-editor@latest/css/froala_style.min.css" rel="stylesheet"
+        type="text/css" />
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background: #fafafa;
+        }
+
+        /* Blog Layout */
+        .blog-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .blog-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            z-index: 100;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .blog-logo {
+            font-size: 1.3rem;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .blog-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 0.5rem 1.25rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: #6b7280;
+        }
+
+        .btn-ghost:hover {
+            background: #f3f4f6;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 145, 235, 0.4);
+        }
+
+        /* Main Content */
+        .blog-main {
+            flex: 1;
+            margin-top: 60px;
+            padding: 3rem;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary-blue);
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            gap: 0.75rem;
+            color: var(--primary-dark);
+        }
+
+        /* Editor Container */
+        .editor-container {
+            background: white;
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .post-title {
+            width: 100%;
+            border: none;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            padding: 0;
+            outline: none;
+            color: #1f2937;
+        }
+
+        .post-subtitle {
+            width: 100%;
+            border: none;
+            font-size: 1.25rem;
+            color: #6b7280;
+            margin-bottom: 2rem;
+            padding: 0;
+            outline: none;
+        }
+
+        .post-meta {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid #e5e7eb;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Sidebar */
+        .blog-sidebar {
+            position: fixed;
+            right: 0;
+            top: 60px;
+            width: 320px;
+            height: calc(100vh - 60px);
+            background: white;
+            border-left: 1px solid #e5e7eb;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .sidebar-section {
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-section h3 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #9ca3af;
+            margin-bottom: 1rem;
+        }
+
+        .sidebar-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .sidebar-input:focus {
+            outline: none;
+            border-color: #ff9a9e;
+        }
+
+        .tag-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .tag {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tag i {
+            cursor: pointer;
+        }
+
+        .cover-preview {
+            width: 100%;
+            height: 150px;
+            background: #f3f4f6;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #9ca3af;
+            font-size: 2rem;
+            margin-bottom: 0.75rem;
+        }
+
+        /* Config Section */
+        .config-section {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .config-code-container {
+            background: #1e1e1e;
+            border-radius: 8px;
+            padding: 1.5rem;
+            position: relative;
+            margin-top: 1rem;
+        }
+
+        .config-code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .config-code-title {
+            color: #fff;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .copy-btn {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 16px rgba(0, 152, 247, 0.3);
+        }
+
+        .copy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(0, 152, 247, 0.4);
+        }
+
+        .copy-btn.copied {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .config-code {
+            color: #d4d4d4;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            overflow-x: auto;
+        }
+
+        @media (max-width: 1400px) {
+            .blog-sidebar {
+                display: none;
+            }
+
+            .blog-main {
+                max-width: 900px;
+            }
+        }
+
+        /* Normalize list indentation in Froala editor */
+        .fr-element ul,
+        .fr-element ol,
+        .fr-view ul,
+        .fr-view ol {
+            margin-left: 0 !important;
+            padding-left: 1.5em !important;
+        }
+    </style>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --froala-blue: #0098F7;
+    --froala-blue-hover: #0080d4;
+    --froala-dark: #373A3E;
+    --froala-text: #5A5D63;
+    --froala-light-bg: #F5F8FA;
+    --froala-border: #E0E4E8;
+    --froala-white: #FFFFFF;
+    --nav-height: 72px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--froala-white);
+    color: var(--froala-dark);
+  }
+
+  .navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: var(--froala-white);
+    border-bottom: 1px solid var(--froala-border);
+    height: var(--nav-height);
+    display: flex;
+    align-items: center;
+    padding: 0 40px;
+  }
+
+  .navbar-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 1240px;
+    margin: 0 auto;
+  }
+
+  .nav-logo {
+    text-decoration: none;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  .nav-logo .logo-text {
+    font-size: 28px;
+    font-weight: 800;
+    font-style: italic;
+    color: var(--froala-blue);
+    letter-spacing: -0.5px;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    list-style: none;
+  }
+
+  .nav-item { position: relative; }
+
+  .nav-item::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    height: 10px;
+  }
+
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 10px 14px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--froala-dark);
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    background: none;
+    font-family: 'Nunito', sans-serif;
+    transition: color 0.15s ease;
+    white-space: nowrap;
+  }
+
+  .nav-link:hover { color: var(--froala-blue); }
+
+  .nav-link .chevron {
+    width: 12px; height: 12px;
+    opacity: 0.45;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+
+  .nav-item:hover .chevron { transform: rotate(180deg); opacity: 0.7; }
+  .nav-item:hover > .nav-link { color: var(--froala-blue); }
+
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+
+  .btn-outline {
+    padding: 7px 22px;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    color: var(--froala-blue);
+    border: 2px solid var(--froala-blue);
+    border-radius: 4px;
+    text-decoration: none;
+    background: none;
+    transition: all 0.15s ease;
+  }
+
+  .btn-outline:hover { background: var(--froala-blue); color: var(--froala-white); }
+
+  .btn-filled {
+    padding: 9px 22px;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    color: var(--froala-white);
+    background: var(--froala-blue);
+    border: 2px solid var(--froala-blue);
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+
+  .btn-filled:hover { background: var(--froala-blue-hover); border-color: var(--froala-blue-hover); }
+
+  .cart-icon {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    color: var(--froala-dark);
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+
+  .cart-icon:hover { color: var(--froala-blue); }
+  .cart-icon svg { width: 22px; height: 22px; }
+
+  /* ── DROPDOWNS ── */
+  .dropdown-panel {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--froala-white);
+    border: 1px solid var(--froala-border);
+    border-radius: 6px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.04);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+  }
+
+  .nav-item:hover .dropdown-panel {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .dropdown-panel.size-wide { min-width: 680px; padding: 24px 28px; }
+  .dropdown-panel.size-med { min-width: 460px; padding: 24px 28px; }
+  .dropdown-panel.size-sm { min-width: 280px; padding: 14px 8px; }
+
+  .dd-grid { display: grid; gap: 28px; }
+  .dd-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+  .dd-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+  .dd-label {
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.9px;
+    color: #A0A4AA;
+    margin-bottom: 8px;
+    padding-left: 10px;
+  }
+
+  .dd-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 10px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: background 0.15s ease;
+  }
+
+  .dd-link:hover { background: var(--froala-light-bg); }
+
+  .dd-link .ico {
+    width: 34px; height: 34px;
+    border-radius: 6px;
+    background: var(--froala-light-bg);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s ease;
+  }
+
+  .dd-link:hover .ico { background: #E6F4FE; }
+
+  .dd-link .ico svg {
+    width: 17px; height: 17px;
+    color: var(--froala-text);
+    transition: color 0.15s ease;
+  }
+
+  .dd-link:hover .ico svg { color: var(--froala-blue); }
+
+  .dd-link .dd-text { display: flex; flex-direction: column; gap: 1px; }
+  .dd-link .dd-text .title { font-size: 14px; font-weight: 700; color: var(--froala-dark); }
+  .dd-link .dd-text .desc { font-size: 12px; font-weight: 400; color: var(--froala-text); }
+
+  .dd-simple {
+    display: block;
+    padding: 7px 12px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--froala-dark);
+    text-decoration: none;
+    border-radius: 5px;
+    transition: all 0.12s ease;
+  }
+
+  .dd-simple:hover { color: var(--froala-blue); background: var(--froala-light-bg); }
+
+  .dd-simple .ext-icon {
+    width: 11px; height: 11px;
+    vertical-align: middle;
+    margin-left: 3px;
+    opacity: 0.35;
+  }
+
+  .dd-simple .tag {
+    display: inline-block;
+    font-size: 9px; font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    background: #E6F4FE;
+    color: var(--froala-blue);
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
+  .dd-cta { color: var(--froala-blue); font-weight: 700; }
+
+  .dd-divider { height: 1px; background: var(--froala-border); margin: 8px 4px; }
+
+  .fw-strip { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--froala-border); }
+  .fw-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+
+  .fw-chip {
+    padding: 4px 10px;
+    font-size: 12px; font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    color: var(--froala-text);
+    background: var(--froala-light-bg);
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.12s ease;
+  }
+
+  .fw-chip:hover { background: #E6F4FE; color: var(--froala-blue); }
+
+  /* ── SOLUTIONS PANEL - wider layout ── */
+  .dropdown-panel.size-solutions {
+    min-width: 720px;
+    padding: 24px 28px;
+  }
+
+  /* Role cards in Solutions */
+  .dd-role-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 11px 10px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: background 0.15s ease;
+    margin-bottom: 2px;
+  }
+
+  .dd-role-card:hover { background: var(--froala-light-bg); }
+
+  .dd-role-card .ico {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    background: var(--froala-light-bg);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s ease;
+  }
+
+  .dd-role-card:hover .ico { background: #E6F4FE; }
+
+  .dd-role-card .ico svg {
+    width: 18px; height: 18px;
+    color: var(--froala-text);
+    transition: color 0.15s ease;
+  }
+
+  .dd-role-card:hover .ico svg { color: var(--froala-blue); }
+
+  .dd-role-card .dd-text { display: flex; flex-direction: column; gap: 2px; }
+  .dd-role-card .dd-text .title { font-size: 14px; font-weight: 700; color: var(--froala-dark); }
+  .dd-role-card .dd-text .desc { font-size: 12px; font-weight: 400; color: var(--froala-text); line-height: 1.4; }
+</style>
+</head>
+
+<body>
+    <!-- Header -->
+    <div class="blog-header">
+        <div class="blog-logo">
+            <i class="fa-solid fa-pen-fancy"></i> MyBlog
+        </div>
+        <div class="blog-actions">
+            <button class="btn btn-ghost" onclick="alert('Preview mode')">
+                <i class="fa-solid fa-eye"></i> Preview
+            </button>
+            <button class="btn btn-ghost" onclick="alert('Saved as draft')">
+                <i class="fa-solid fa-save"></i> Save Draft
+            </button>
+            <button class="btn btn-primary" onclick="alert('Published!')">
+                <i class="fa-solid fa-paper-plane"></i> Publish
+            </button>
+        </div>
+    </div>
+
+    <div class="blog-wrapper">
+        <!-- Main Content -->
+        <div class="blog-main">
+
+            <!-- Editor -->
+            <div class="editor-container">
+                <input type="text" class="post-title" placeholder="Your story title..."
+                    value="The Ultimate Guide to Modern Web Development">
+                <input type="text" class="post-subtitle" placeholder="Add a subtitle (optional)"
+                    value="Everything you need to know to build amazing web experiences in 2026">
+
+                <div class="post-meta">
+                    <div class="meta-item">
+                        <i class="fa-solid fa-user-circle"></i>
+                        <span>Jane Smith</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fa-solid fa-calendar"></i>
+                        <span>January 8, 2026</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fa-solid fa-clock"></i>
+                        <span>5 min read</span>
+                    </div>
+                </div>
+
+                <div id="froala-editor">
+                    <p>Web development has come a long way in the past few years. With new frameworks, tools, and best
+                        practices emerging constantly, it can be challenging to keep up. In this comprehensive guide,
+                        we'll explore the essential skills and technologies you need to master modern web development.
+                    </p>
+
+                    <h2>Why Web Development Matters More Than Ever</h2>
+                    <p>In today's digital-first world, having a strong web presence is crucial for businesses and
+                        individuals alike. Whether you're building a personal blog, an e-commerce platform, or a complex
+                        web application, understanding modern web development principles is essential.</p>
+
+                    <h2>Core Technologies You Need to Know</h2>
+                    <h3>1. HTML5 and Semantic Markup</h3>
+                    <p>HTML5 provides the foundation for all web content. Understanding semantic markup helps create
+                        accessible, SEO-friendly websites.</p>
+
+                    <h3>2. CSS3 and Modern Styling</h3>
+                    <p>Modern CSS includes powerful features like Flexbox, Grid, and CSS Variables that make styling
+                        more efficient and maintainable.</p>
+
+                    <blockquote>
+                        <p>"Good design is as little design as possible." - Dieter Rams</p>
+                    </blockquote>
+
+                    <h3>3. JavaScript and ES6+</h3>
+                    <p>JavaScript is the language of the web. Modern ES6+ features make code more readable and powerful.
+                    </p>
+
+                    <h2>Popular Frameworks and Libraries</h2>
+                    <ul>
+                        <li><strong>React</strong> - Component-based UI library</li>
+                        <li><strong>Vue.js</strong> - Progressive JavaScript framework</li>
+                        <li><strong>Angular</strong> - Full-featured framework</li>
+                    </ul>
+
+                    <h2>Conclusion</h2>
+                    <p>Modern web development is an exciting field that's constantly evolving. By mastering these core
+                        concepts and staying curious, you'll be well-equipped to build amazing web experiences.</p>
+                </div>
+            </div>
+
+            <!-- Config Modal -->
+            <div id="configModalOverlay" class="config-modal-overlay" onclick="closeConfigModal(event)">
+                <div class="config-modal">
+                    <div class="config-modal-header">
+                        <h2 class="config-modal-title">
+                            <i class="fa-solid fa-code"></i> Configuration
+                        </h2>
+                        <button class="config-modal-close" onclick="closeConfigModal(event)">
+                            <i class="fa-solid fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="config-modal-body">
+                        <div class="config-section">
+                            <h2 style="margin-top: 0; color: #1f2937;">Froala Configuration for Blogging</h2>
+                            <p style="color: #6b7280; margin-bottom: 1.5rem;">This demo uses the following Froala Editor
+                                configuration optimized for blog post editing:</p>
+
+                            
+                    <div class="config-explanation" style="background: rgba(0, 152, 247, 0.05); padding: 1.2rem; border-radius: 8px; margin-bottom: 1.5rem; border-left: 4px solid #0098f7;">
+                        <h4 style="margin-top: 0; color: #0f172a; margin-bottom: 0.5rem;"><i class="fa-solid fa-lightbulb" style="color: #0098f7; margin-right: 0.5rem;"></i>Why this configuration is chosen:</h4>
+                        <ul style="color: #334155; margin: 0; padding-left: 1.2rem; font-size: 0.95rem; line-height: 1.6;">
+                            <li style="margin-bottom: 0.3rem;"><strong>Rich Media Focus:</strong> Enables easy insertions of deeply embedded content through the <a href="https://froala.com/wysiwyg-editor/docs/plugins/video-plugin/" target="_blank" style="color: #0098f7; text-decoration: none; font-family: monospace; font-weight: bold;">video</a> and <a href="https://froala.com/wysiwyg-editor/docs/plugins/image-plugin/" target="_blank" style="color: #0098f7; text-decoration: none; font-family: monospace; font-weight: bold;">image</a> plugins allowing bloggers to create engaging multimedia posts.</li>
+                            <li style="margin-bottom: 0.3rem;"><strong>Storytelling Flow:</strong> Incorporates <a href="https://froala.com/wysiwyg-editor/docs/plugins/quote-plugin/" target="_blank" style="color: #0098f7; text-decoration: none; font-family: monospace; font-weight: bold;">quote</a> and <a href="https://froala.com/wysiwyg-editor/docs/plugins/paragraph-format-plugin/" target="_blank" style="color: #0098f7; text-decoration: none; font-family: monospace; font-weight: bold;">paragraphFormat</a> options so writers can cleanly differentiate headers, blockquotes, and normal text to improve readability.</li>
+                            <li><strong>Long-form Readability:</strong> Excludes aggressive limits and enables <a href="https://froala.com/wysiwyg-editor/docs/plugins/fullscreen-plugin/" target="_blank" style="color: #0098f7; text-decoration: none; font-family: monospace; font-weight: bold;">fullscreen</a> mode for an uninterrupted, distraction-free writing experience.</li>
+                        </ul>
+                    </div>
+                    <div class="config-code-container">
+                                <div class="config-code-header">
+                                    <div class="config-code-title">
+                                        <i class="fa-brands fa-js"></i> JavaScript Configuration
+                                    </div>
+                                    <button class="copy-btn" onclick="copyConfig()">
+                                        <i class="fa-solid fa-copy"></i> Copy Config
+                                    </button>
+                                </div>
+                                <pre class="config-code"><code>new FroalaEditor('#froala-editor', {
+  key: 'YOUR_LICENSE_KEY',
+  pluginsEnabled: [
+    'align', 'colors', 'fontSize', 'paragraphFormat',
+    'lists', 'link', 'image', 'video',
+    'quote', 'specialCharacters', 'codeView',
+    'fullscreen', 'wordCounter', 'charCounter'
+  ],
+  toolbarButtons: {
+    'moreText': {
+      'buttons': ['bold', 'italic', 'underline', 'fontSize',
+                  'textColor', 'backgroundColor', 'clearFormatting']
+    },
+    'moreParagraph': {
+      'buttons': ['alignLeft', 'alignCenter', 'alignRight',
+                  'formatOL', 'formatUL', 'paragraphFormat',
+                  'outdent', 'indent', 'quote']
+    },
+    'moreRich': {
+      'buttons': ['insertLink', 'insertImage', 'insertVideo',
+                  'specialCharacters', 'insertHR']
+    },
+    'moreMisc': {
+      'buttons': ['undo', 'redo', 'fullscreen', 'html', 'selectAll']
+    }
+  },
+  heightMin: 400,
+  placeholderText: 'Tell your story...',
+  charCounterCount: true,
+  wordCounterMax: -1,
+  imageEditButtons: ['imageReplace', 'imageAlign', 'imageCaption',
+                     'imageRemove', 'imageLink', 'imageAlt'],
+  imageDefaultWidth: 0,
+  imageResizeWithPercent: true,
+  videoResponsive: true,
+  videoInsertButtons: ['videoBack', '|', 'videoByURL', 'videoEmbed'],
+  linkAlwaysBlank: true,
+  linkAutoPrefix: 'https://'
+});</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script src="config_utils.js"></script>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="blog-sidebar">
+            <div class="sidebar-section">
+                <h3>Publish Settings</h3>
+                <select class="sidebar-input">
+                    <option>Draft</option>
+                    <option>Published</option>
+                    <option>Scheduled</option>
+                </select>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>Cover Image</h3>
+                <div class="cover-preview">
+                    <i class="fa-solid fa-image"></i>
+                </div>
+                <button class="btn btn-ghost" style="width: 100%;">
+                    <i class="fa-solid fa-upload"></i> Upload Cover
+                </button>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>Category</h3>
+                <select class="sidebar-input">
+                    <option>Technology</option>
+                    <option>Design</option>
+                    <option>Business</option>
+                    <option>Lifestyle</option>
+                    <option>Tutorial</option>
+                </select>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>Tags</h3>
+                <input type="text" class="sidebar-input" placeholder="Add tag..."
+                    onkeypress="if(event.key==='Enter') alert('Add tag functionality')">
+                <div class="tag-container">
+                    <span class="tag">webdev <i class="fa-solid fa-times"></i></span>
+                    <span class="tag">tutorial <i class="fa-solid fa-times"></i></span>
+                    <span class="tag">javascript <i class="fa-solid fa-times"></i></span>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>SEO Settings</h3>
+                <input type="text" class="sidebar-input" placeholder="SEO Title">
+                <textarea class="sidebar-input" rows="3" placeholder="Meta description"></textarea>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>Reading Time</h3>
+                <input type="text" class="sidebar-input" value="5 minutes" readonly>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>Visibility</h3>
+                <select class="sidebar-input">
+                    <option>Public</option>
+                    <option>Unlisted</option>
+                    <option>Private</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript"
+        src="https://cdn.jsdelivr.net/npm/froala-editor@latest/js/froala_editor.pkgd.min.js"></script>
+    <script>
+        new FroalaEditor('#froala-editor', {
+            key: 'Lc2C1qC1D1D4C3qB12qC8tsE4B-8F3J3A6B8B5D5D2A2di1aaA4cA1lnE1F2nrXYb1VPUGRHYZNRJd1JVOOb1HAc1zSZC1KGD1D1D1A1F1I4A10B1C6E4==',
+            pluginsEnabled: [
+                'align', 'colors', 'fontSize', 'paragraphFormat',
+                'lists', 'link', 'image', 'video',
+                'quote', 'specialCharacters', 'codeView',
+                'fullscreen', 'wordCounter', 'charCounter'
+            ],
+            toolbarButtons: {
+                'moreText': {
+                    'buttons': ['bold', 'italic', 'underline', 'fontSize',
+                        'textColor', 'backgroundColor', 'clearFormatting']
+                },
+                'moreParagraph': {
+                    'buttons': ['alignLeft', 'alignCenter', 'alignRight',
+                        'formatOL', 'formatUL', 'paragraphFormat',
+                        'outdent', 'indent', 'quote']
+                },
+                'moreRich': {
+                    'buttons': ['insertLink', 'insertImage', 'insertVideo',
+                        'specialCharacters', 'insertHR']
+                },
+                'moreMisc': {
+                    'buttons': ['undo', 'redo', 'fullscreen', 'html', 'selectAll']
+                }
+            },
+            heightMin: 400,
+            placeholderText: 'Tell your story...',
+            charCounterCount: true,
+            wordCounterMax: -1,
+            imageEditButtons: ['imageReplace', 'imageAlign', 'imageCaption',
+                'imageRemove', 'imageLink', 'imageAlt'],
+            imageDefaultWidth: 0,
+            imageResizeWithPercent: true,
+            videoResponsive: true,
+            videoInsertButtons: ['videoBack', '|', 'videoByURL', 'videoEmbed'],
+            linkAlwaysBlank: true,
+            linkAutoPrefix: 'https://'
+        });
+
+        function copyConfig() {
+            const configText = document.querySelector('.config-code code').textContent;
+            navigator.clipboard.writeText(configText).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fa-solid fa-copy"></i> Copy Config';
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+
+</html>

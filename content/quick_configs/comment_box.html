@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comment Box - Froala Demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/froala-editor@latest/css/froala_editor.pkgd.min.css" rel="stylesheet"
+        type="text/css" />
+    <link href="https://cdn.jsdelivr.net/npm/froala-editor@latest/css/froala_style.min.css" rel="stylesheet"
+        type="text/css" />
+
+    <style>
+        :root {
+            --primary-blue: #0084ff;
+            --primary-dark: #0066cc;
+            --text-dark: #1a1a1a;
+            --text-gray: #6b7280;
+            --bg-light: #f9fafb;
+            --pink-gradient: var(--gradient-primary);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background: #f0f2f5;
+        }
+
+        /* Social Media Layout */
+        .social-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .social-sidebar {
+            width: 280px;
+            background: white;
+            border-right: 1px solid #e5e7eb;
+            padding: 1.5rem;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .social-logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: var(--pink-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 2rem;
+        }
+
+        .social-nav {
+            margin-bottom: 2rem;
+        }
+
+        .social-nav-item {
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--text-gray);
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .social-nav-item:hover {
+            background: var(--bg-light);
+        }
+
+        .social-nav-item.active {
+            background: rgba(0, 145, 235, 0.1);
+            color: var(--primary-blue);
+        }
+
+        .social-nav-item i {
+            font-size: 1.3rem;
+        }
+
+        /* Main Content */
+        .social-main {
+            margin-left: 280px;
+            flex: 1;
+            padding: 2rem;
+            max-width: 700px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary-blue);
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            gap: 0.75rem;
+        }
+
+        /* Post Card */
+        .post-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .post-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--pink-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .post-info {
+            flex: 1;
+        }
+
+        .post-author {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .post-time {
+            font-size: 0.85rem;
+            color: var(--text-gray);
+        }
+
+        .post-content {
+            color: var(--text-dark);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .post-image {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+        }
+
+        .post-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 1rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .post-actions-left {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .post-actions-right {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .post-action {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-gray);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .post-action:hover {
+            color: var(--primary-blue);
+        }
+
+        .post-action.active {
+            color: var(--primary-blue);
+        }
+
+        /* Comments Section */
+        .comments-section {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .comments-header {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text-dark);
+        }
+
+        /* Existing Comments */
+        .comment {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #f0f2f5;
+        }
+
+        .comment:last-of-type {
+            border-bottom: none;
+        }
+
+        .comment-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .comment-content {
+            flex: 1;
+        }
+
+        .comment-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .comment-author {
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 0.95rem;
+        }
+
+        .comment-time {
+            font-size: 0.8rem;
+            color: var(--text-gray);
+        }
+
+        .comment-text {
+            color: var(--text-dark);
+            line-height: 1.5;
+            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .comment-actions {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.85rem;
+        }
+
+        .comment-action {
+            color: var(--text-gray);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .comment-action:hover {
+            color: var(--primary-blue);
+        }
+
+        /* Comment Box */
+        .comment-box {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .comment-box-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--pink-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .comment-box-editor {
+            flex: 1;
+            background: var(--bg-light);
+            border-radius: 12px;
+            padding: 1rem;
+        }
+
+        .comment-box-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1.25rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--text-gray);
+            border: 1px solid #e5e7eb;
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-light);
+        }
+
+        .btn-primary {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        /* Config Modal */
+        .config-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .config-modal-overlay.active {
+            display: flex;
+        }
+
+        .config-modal {
+            background: white;
+            border-radius: 12px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        .config-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .config-modal-header h2 {
+            margin: 0;
+            color: var(--text-dark);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-gray);
+        }
+
+        .config-code-container {
+            background: #1e1e1e;
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .config-code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .config-code-title {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .copy-btn {
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .copy-btn.copied {
+            background: #10b981;
+        }
+
+        .config-code {
+            color: #d4d4d4;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            overflow-x: auto;
+        }
+
+        /* Normalize list indentation in Froala editor */
+        .fr-element ul,
+        .fr-element ol,
+        .fr-view ul,
+        .fr-view ol {
+            margin-left: 0 !important;
+            padding-left: 1.5em !important;
+        }
+    </style>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --froala-blue: #0098F7;
+    --froala-blue-hover: #0080d4;
+    --froala-dark: #373A3E;
+    --froala-text: #5A5D63;
+    --froala-light-bg: #F5F8FA;
+    --froala-border: #E0E4E8;
+    --froala-white: #FFFFFF;
+    --nav-height: 72px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--froala-white);
+    color: var(--froala-dark);
+  }
+
+  .navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: var(--froala-white);
+    border-bottom: 1px solid var(--froala-border);
+    height: var(--nav-height);
+    display: flex;
+    align-items: center;
+    padding: 0 40px;
+  }
+
+  .navbar-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 1240px;
+    margin: 0 auto;
+  }
+
+  .nav-logo {
+    text-decoration: none;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  .nav-logo .logo-text {
+    font-size: 28px;
+    font-weight: 800;
+    font-style: italic;
+    color: var(--froala-blue);
+    letter-spacing: -0.5px;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    list-style: none;
+  }
+
+  .nav-item { position: relative; }
+
+  .nav-item::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    height: 10px;
+  }
+
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 10px 14px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--froala-dark);
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    background: none;
+    font-family: 'Nunito', sans-serif;
+    transition: color 0.15s ease;
+    white-space: nowrap;
+  }
+
+  .nav-link:hover { color: var(--froala-blue); }
+
+  .nav-link .chevron {
+    width: 12px; height: 12px;
+    opacity: 0.45;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+
+  .nav-item:hover .chevron { transform: rotate(180deg); opacity: 0.7; }
+  .nav-item:hover > .nav-link { color: var(--froala-blue); }
+
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+
+  .btn-outline {
+    padding: 7px 22px;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    color: var(--froala-blue);
+    border: 2px solid var(--froala-blue);
+    border-radius: 4px;
+    text-decoration: none;
+    background: none;
+    transition: all 0.15s ease;
+  }
+
+  .btn-outline:hover { background: var(--froala-blue); color: var(--froala-white); }
+
+  .btn-filled {
+    padding: 9px 22px;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    color: var(--froala-white);
+    background: var(--froala-blue);
+    border: 2px solid var(--froala-blue);
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+
+  .btn-filled:hover { background: var(--froala-blue-hover); border-color: var(--froala-blue-hover); }
+
+  .cart-icon {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    color: var(--froala-dark);
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+
+  .cart-icon:hover { color: var(--froala-blue); }
+  .cart-icon svg { width: 22px; height: 22px; }
+
+  /* ── DROPDOWNS ── */
+  .dropdown-panel {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--froala-white);
+    border: 1px solid var(--froala-border);
+    border-radius: 6px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.04);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+  }
+
+  .nav-item:hover .dropdown-panel {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .dropdown-panel.size-wide { min-width: 680px; padding: 24px 28px; }
+  .dropdown-panel.size-med { min-width: 460px; padding: 24px 28px; }
+  .dropdown-panel.size-sm { min-width: 280px; padding: 14px 8px; }
+
+  .dd-grid { display: grid; gap: 28px; }
+  .dd-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+  .dd-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+  .dd-label {
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.9px;
+    color: #A0A4AA;
+    margin-bottom: 8px;
+    padding-left: 10px;
+  }
+
+  .dd-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 10px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: background 0.15s ease;
+  }
+
+  .dd-link:hover { background: var(--froala-light-bg); }
+
+  .dd-link .ico {
+    width: 34px; height: 34px;
+    border-radius: 6px;
+    background: var(--froala-light-bg);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s ease;
+  }
+
+  .dd-link:hover .ico { background: #E6F4FE; }
+
+  .dd-link .ico svg {
+    width: 17px; height: 17px;
+    color: var(--froala-text);
+    transition: color 0.15s ease;
+  }
+
+  .dd-link:hover .ico svg { color: var(--froala-blue); }
+
+  .dd-link .dd-text { display: flex; flex-direction: column; gap: 1px; }
+  .dd-link .dd-text .title { font-size: 14px; font-weight: 700; color: var(--froala-dark); }
+  .dd-link .dd-text .desc { font-size: 12px; font-weight: 400; color: var(--froala-text); }
+
+  .dd-simple {
+    display: block;
+    padding: 7px 12px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--froala-dark);
+    text-decoration: none;
+    border-radius: 5px;
+    transition: all 0.12s ease;
+  }
+
+  .dd-simple:hover { color: var(--froala-blue); background: var(--froala-light-bg); }
+
+  .dd-simple .ext-icon {
+    width: 11px; height: 11px;
+    vertical-align: middle;
+    margin-left: 3px;
+    opacity: 0.35;
+  }
+
+  .dd-simple .tag {
+    display: inline-block;
+    font-size: 9px; font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    background: #E6F4FE;
+    color: var(--froala-blue);
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
+  .dd-cta { color: var(--froala-blue); font-weight: 700; }
+
+  .dd-divider { height: 1px; background: var(--froala-border); margin: 8px 4px; }
+
+  .fw-strip { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--froala-border); }
+  .fw-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+
+  .fw-chip {
+    padding: 4px 10px;
+    font-size: 12px; font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    color: var(--froala-text);
+    background: var(--froala-light-bg);
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.12s ease;
+  }
+
+  .fw-chip:hover { background: #E6F4FE; color: var(--froala-blue); }
+
+  /* ── SOLUTIONS PANEL - wider layout ── */
+  .dropdown-panel.size-solutions {
+    min-width: 720px;
+    padding: 24px 28px;
+  }
+
+  /* Role cards in Solutions */
+  .dd-role-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 11px 10px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: background 0.15s ease;
+    margin-bottom: 2px;
+  }
+
+  .dd-role-card:hover { background: var(--froala-light-bg); }
+
+  .dd-role-card .ico {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    background: var(--froala-light-bg);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s ease;
+  }
+
+  .dd-role-card:hover .ico { background: #E6F4FE; }
+
+  .dd-role-card .ico svg {
+    width: 18px; height: 18px;
+    color: var(--froala-text);
+    transition: color 0.15s ease;
+  }
+
+  .dd-role-card:hover .ico svg { color: var(--froala-blue); }
+
+  .dd-role-card .dd-text { display: flex; flex-direction: column; gap: 2px; }
+  .dd-role-card .dd-text .title { font-size: 14px; font-weight: 700; color: var(--froala-dark); }
+  .dd-role-card .dd-text .desc { font-size: 12px; font-weight: 400; color: var(--froala-text); line-height: 1.4; }
+</style>
+</head>
+
+<body>
+    <div class="social-wrapper">
+        <!-- Sidebar -->
+        <div class="social-sidebar">
+            <div class="social-logo">
+                <i class="fa-solid fa-comments"></i> SocialHub
+            </div>
+            <nav class="social-nav">
+                <div class="social-nav-item active">
+                    <i class="fa-solid fa-house"></i>
+                    <span>Home</span>
+                </div>
+                <div class="social-nav-item">
+                    <i class="fa-solid fa-compass"></i>
+                    <span>Explore</span>
+                </div>
+                <div class="social-nav-item">
+                    <i class="fa-solid fa-bell"></i>
+                    <span>Notifications</span>
+                </div>
+                <div class="social-nav-item">
+                    <i class="fa-solid fa-envelope"></i>
+                    <span>Messages</span>
+                </div>
+                <div class="social-nav-item">
+                    <i class="fa-solid fa-bookmark"></i>
+                    <span>Saved</span>
+                </div>
+                <div class="social-nav-item">
+                    <i class="fa-solid fa-user"></i>
+                    <span>Profile</span>
+                </div>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="social-main">
+            <!-- Post Card -->
+            <div class="post-card">
+                <div class="post-header">
+                    <img src="https://i.pravatar.cc/150?img=3" alt="User" class="post-avatar">
+                    <div class="post-meta">
+                        <div class="post-author">Sarah Jenkins</div>
+                        <div class="post-time">2 hours ago</div>
+                    </div>
+                    <button class="btn btn-ghost" style="margin-left: auto;">
+                        <i class="fa-solid fa-ellipsis"></i>
+                    </button>
+                </div>
+                <div class="post-content">
+                    <p>Just launched our new product! 🚀 Can't wait for everyone to try it out. The team has been
+                        working
+                        incredibly hard for the past 6 months.</p>
+                    <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                        alt="Product Launch" class="post-image">
+                </div>
+                <div class="post-actions">
+                    <div class="post-actions-left">
+                        <div class="action-item active">
+                            <i class="fa-solid fa-heart"></i> 245
+                        </div>
+                        <div class="action-item">
+                            <i class="fa-solid fa-comment"></i> 42
+                        </div>
+                        <div class="action-item">
+                            <i class="fa-solid fa-share"></i> 12
+                        </div>
+                    </div>
+                    <div class="post-actions-right">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comments Section -->
+            <div class="comments-section">
+                <div class="comments-header">
+                    <i class="fa-solid fa-comments"></i> Comments (23)
+                </div>
+
+                <!-- Existing Comments -->
+                <div class="comment">
+                    <div class="comment-avatar">MJ</div>
+                    <div class="comment-content">
+                        <div class="comment-header">
+                            <span class="comment-author">Michael Johnson</span>
+                            <span class="comment-time">1 hour ago</span>
+                        </div>
+                        <div class="comment-text">
+                            This looks amazing! Would love to see <strong>dark mode support</strong> and <strong>custom
+                                widgets</strong> in the next version. Great work! 🎉
+                        </div>
+                        <div class="comment-actions">
+                            <span class="comment-action"><i class="fa-solid fa-heart"></i> 12</span>
+                            <span class="comment-action">Reply</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="comment">
+                    <div class="comment-avatar" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                        SR</div>
+                    <div class="comment-content">
+                        <div class="comment-header">
+                            <span class="comment-author">Sarah Rodriguez</span>
+                            <span class="comment-time">45 minutes ago</span>
+                        </div>
+                        <div class="comment-text">
+                            The analytics section is super clean! One suggestion: add <em>export to CSV</em>
+                            functionality for the reports.
+                        </div>
+                        <div class="comment-actions">
+                            <span class="comment-action"><i class="fa-solid fa-heart"></i> 8</span>
+                            <span class="comment-action">Reply</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="comment">
+                    <div class="comment-avatar" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                        DL</div>
+                    <div class="comment-content">
+                        <div class="comment-header">
+                            <span class="comment-author">David Lee</span>
+                            <span class="comment-time">30 minutes ago</span>
+                        </div>
+                        <div class="comment-text">
+                            Congratulations on the launch! 🎊 When will the API documentation be available?
+                        </div>
+                        <div class="comment-actions">
+                            <span class="comment-action"><i class="fa-solid fa-heart"></i> 5</span>
+                            <span class="comment-action">Reply</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Comment Box -->
+                <div class="comment-box">
+                    <div class="comment-box-avatar">YO</div>
+                    <div class="comment-box-editor">
+                        <div id="froala-editor" style="min-height: 80px;">
+                            <p>Write a comment...</p>
+                        </div>
+                        <div class="comment-box-actions">
+                            <button class="btn btn-secondary">Cancel</button>
+                            <button class="btn btn-primary" onclick="alert('Comment posted!')">
+                                <i class="fa-solid fa-paper-plane"></i> Post Comment
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Config Section Removed (Moved to Modal) -->
+
+    <!-- Config Modal -->
+    <div id="configModalOverlay" class="config-modal-overlay" onclick="closeConfigModal(event)">
+        <div class="config-modal">
+            <div class="config-modal-header">
+                <h2 class="config-modal-title">
+                    <i class="fa-solid fa-code"></i> Configuration
+                </h2>
+                <button class="config-modal-close" onclick="closeConfigModal(event)">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+            </div>
+            <div class="config-modal-body">
+                <div class="config-section">
+                    <h2 style="margin-top: 0; color: #1f2937;">Froala Configuration for Comments</h2>
+                    <p style="color: #6b7280; margin-bottom: 1.5rem;">This demo uses the following Froala Editor
+                        configuration optimized
+                        for comment sections:</p>
+
+                    
+                    <div class="config-explanation" style="background: rgba(0, 152, 247, 0.05); padding: 1.2rem; border-radius: 8px; margin-bottom: 1.5rem; border-left: 4px solid #0098f7;">
+                        <h4 style="margin-top: 0; color: #0f172a; margin-bottom: 0.5rem;"><i class="fa-solid fa-lightbulb" style="color: #0098f7; margin-right: 0.5rem;"></i>Why this configuration is chosen:</h4>
+                        <ul style="color: #334155; margin: 0; padding-left: 1.2rem; font-size: 0.95rem; line-height: 1.6;">
+                            <li style="margin-bottom: 0.3rem;"><strong>Minimalistic UI:</strong> Keeps the interface uncluttered by providing only essential styling ensuring commenters find it easy to navigate.</li>
+                            <li style="margin-bottom: 0.3rem;"><strong>Compact Formatting:</strong> Setting <a href="https://froala.com/wysiwyg-editor/docs/options/#enter" target="_blank" style="color: #0098f7; text-decoration: none; font-family: monospace; font-weight: bold;">enter</a>: FroalaEditor.ENTER_BR forces simple line breaks instead of paragraphs, matching chat-like behaviors and reducing vertical bloat.</li>
+                            <li><strong>Engagement Control:</strong> Uses <a href="https://froala.com/wysiwyg-editor/docs/options/#charCounterMax" target="_blank" style="color: #0098f7; text-decoration: none; font-family: monospace; font-weight: bold;">charCounterMax</a> to limit inputs to 500 characters, encouraging concise, meaningful contributions and reducing spam.</li>
+                        </ul>
+                    </div>
+                    <div class="config-code-container">
+                        <div class="config-code-header">
+                            <div class="config-code-title">
+                                <i class="fa-brands fa-js"></i> JavaScript Configuration
+                            </div>
+                            <button class="copy-btn" onclick="copyConfig()">
+                                <i class="fa-solid fa-copy"></i> Copy Config
+                            </button>
+                        </div>
+                        <pre class="config-code"><code>new FroalaEditor('#froala-editor', {
+  key: 'YOUR_LICENSE_KEY',
+  pluginsEnabled: [
+    'link', 'emoticons', 'charCounter',
+    'lists', 'colors', 'fontSize'
+  ],
+  toolbarButtons: {
+    'moreText': {
+      'buttons': ['bold', 'italic', 'underline']
+    },
+    'moreParagraph': {
+      'buttons': ['formatOL', 'formatUL']
+    },
+    'moreRich': {
+      'buttons': ['insertLink', 'emoticons']
+    },
+    'moreMisc': {
+      'buttons': []
+    }
+  },
+  toolbarInline: false,
+  toolbarSticky: false,
+  heightMin: 80,
+  heightMax: 200,
+  placeholderText: 'Write a comment...',
+  charCounterCount: true,
+  charCounterMax: 500,
+  linkAlwaysBlank: true,
+  linkAutoPrefix: 'https://',
+  linkInsertButtons: [],
+  linkEditButtons: ['linkOpen', 'linkEdit', 'linkRemove'],
+  emoticonsUseImage: false,
+  quickInsertEnabled: false,
+  enter: FroalaEditor.ENTER_BR
+});</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="config_utils.js"></script>
+    </div>
+
+    <script type="text/javascript"
+        src="https://cdn.jsdelivr.net/npm/froala-editor@latest/js/froala_editor.pkgd.min.js"></script>
+    <script>
+        new FroalaEditor('#froala-editor', {
+            key: 'Lc2C1qC1D1D4C3qB12qC8tsE4B-8F3J3A6B8B5D5D2A2di1aaA4cA1lnE1F2nrXYb1VPUGRHYZNRJd1JVOOb1HAc1zSZC1KGD1D1D1A1F1I4A10B1C6E4==',
+            pluginsEnabled: [
+                'link', 'emoticons', 'charCounter',
+                'lists', 'colors', 'fontSize'
+            ],
+            toolbarButtons: {
+                'moreText': {
+                    'buttons': ['bold', 'italic', 'underline']
+                },
+                'moreParagraph': {
+                    'buttons': ['formatOL', 'formatUL']
+                },
+                'moreRich': {
+                    'buttons': ['insertLink', 'emoticons']
+                },
+                'moreMisc': {
+                    'buttons': []
+                }
+            },
+            toolbarInline: false,
+            toolbarSticky: false,
+            heightMin: 80,
+            heightMax: 200,
+            placeholderText: 'Write a comment...',
+            charCounterCount: true,
+            charCounterMax: 500,
+            linkAlwaysBlank: true,
+            linkAutoPrefix: 'https://',
+            linkInsertButtons: [],
+            linkEditButtons: ['linkOpen', 'linkEdit', 'linkRemove'],
+            emoticonsUseImage: false,
+            quickInsertEnabled: false,
+            enter: FroalaEditor.ENTER_BR
+        });
+
+        function toggleConfig() {
+            const modal = document.getElementById('configModal');
+            modal.classList.toggle('active');
+        }
+
+        function closeModalOnOutside(event) {
+            if (event.target.id === 'configModal') {
+                toggleConfig();
+            }
+        }
+
+        function copyConfig() {
+            const configText = document.querySelector('.config-code code').textContent;
+            navigator.clipboard.writeText(configText).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fa-solid fa-copy"></i> Copy Config';
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('configModal');
+                if (modal.classList.contains('active')) {
+                    toggleConfig();
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

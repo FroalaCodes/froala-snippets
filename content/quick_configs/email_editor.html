@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Editor - Froala Demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/froala-editor@latest/css/froala_editor.pkgd.min.css" rel="stylesheet"
+        type="text/css" />
+    <link href="https://cdn.jsdelivr.net/npm/froala-editor@latest/css/froala_style.min.css" rel="stylesheet"
+        type="text/css" />
+
+    <style>
+        :root {
+            --primary-blue: #0084ff;
+            --primary-dark: #0066cc;
+            --text-dark: #1a1a1a;
+            --text-gray: #6b7280;
+            --bg-light: #f9fafb;
+            --purple-gradient: var(--gradient-primary);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-light);
+        }
+
+        /* Email Client Layout */
+        .email-wrapper {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Email Sidebar */
+        .email-sidebar {
+            width: 280px;
+            background: white;
+            border-right: 1px solid #e5e7eb;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .email-logo {
+            padding: 1.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--purple-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .compose-btn {
+            margin: 1.5rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--purple-gradient);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .compose-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 145, 235, 0.4);
+        }
+
+        .email-nav {
+            flex: 1;
+            padding: 0 1rem;
+        }
+
+        .email-nav-item {
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--text-gray);
+            border-radius: 6px;
+            margin-bottom: 0.25rem;
+        }
+
+        .email-nav-item:hover {
+            background: var(--bg-light);
+        }
+
+        .email-nav-item.active {
+            background: rgba(0, 145, 235, 0.1);
+            color: var(--primary-blue);
+            font-weight: 600;
+        }
+
+        .email-nav-item .count {
+            margin-left: auto;
+            font-size: 0.85rem;
+        }
+
+        /* Main Email Area */
+        .email-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: white;
+        }
+
+        /* Email Header */
+        .email-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .email-header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--text-dark);
+        }
+
+        .email-actions {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 0.5rem 1.25rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .btn-secondary {
+            background: var(--bg-light);
+            color: #374151;
+        }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+
+        .btn-primary {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        /* Email Content */
+        .email-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        .email-form {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary-blue);
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            gap: 0.75rem;
+            color: var(--primary-dark);
+        }
+
+        .email-field {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .email-field-label {
+            width: 80px;
+            font-weight: 500;
+            color: var(--text-gray);
+            font-size: 0.9rem;
+        }
+
+        .email-field-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 0.95rem;
+            padding: 0.25rem;
+        }
+
+        .email-editor-container {
+            margin-top: 1.5rem;
+            min-height: 400px;
+        }
+
+        /* Config Modal */
+        .config-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .config-modal.active {
+            display: flex;
+        }
+
+        .config-modal-content {
+            background: white;
+            border-radius: 12px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        .config-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .config-modal-header h2 {
+            margin: 0;
+            color: var(--text-dark);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-gray);
+        }
+
+        .config-code-container {
+            background: #1e1e1e;
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .config-code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .config-code-title {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .copy-btn {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 16px rgba(0, 152, 247, 0.3);
+        }
+
+        .copy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(0, 152, 247, 0.4);
+        }
+
+        .copy-btn.copied {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .config-code {
+            color: #d4d4d4;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            overflow-x: auto;
+        }
+
+        /* Normalize list indentation in Froala editor */
+        .fr-element ul,
+        .fr-element ol,
+        .fr-view ul,
+        .fr-view ol {
+            margin-left: 0 !important;
+            padding-left: 1.5em !important;
+        }
+    </style>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --froala-blue: #0098F7;
+    --froala-blue-hover: #0080d4;
+    --froala-dark: #373A3E;
+    --froala-text: #5A5D63;
+    --froala-light-bg: #F5F8FA;
+    --froala-border: #E0E4E8;
+    --froala-white: #FFFFFF;
+    --nav-height: 72px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--froala-white);
+    color: var(--froala-dark);
+  }
+
+  .navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: var(--froala-white);
+    border-bottom: 1px solid var(--froala-border);
+    height: var(--nav-height);
+    display: flex;
+    align-items: center;
+    padding: 0 40px;
+  }
+
+  .navbar-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 1240px;
+    margin: 0 auto;
+  }
+
+  .nav-logo {
+    text-decoration: none;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  .nav-logo .logo-text {
+    font-size: 28px;
+    font-weight: 800;
+    font-style: italic;
+    color: var(--froala-blue);
+    letter-spacing: -0.5px;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    list-style: none;
+  }
+
+  .nav-item { position: relative; }
+
+  .nav-item::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    height: 10px;
+  }
+
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 10px 14px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--froala-dark);
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    background: none;
+    font-family: 'Nunito', sans-serif;
+    transition: color 0.15s ease;
+    white-space: nowrap;
+  }
+
+  .nav-link:hover { color: var(--froala-blue); }
+
+  .nav-link .chevron {
+    width: 12px; height: 12px;
+    opacity: 0.45;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+
+  .nav-item:hover .chevron { transform: rotate(180deg); opacity: 0.7; }
+  .nav-item:hover > .nav-link { color: var(--froala-blue); }
+
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+
+  .btn-outline {
+    padding: 7px 22px;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    color: var(--froala-blue);
+    border: 2px solid var(--froala-blue);
+    border-radius: 4px;
+    text-decoration: none;
+    background: none;
+    transition: all 0.15s ease;
+  }
+
+  .btn-outline:hover { background: var(--froala-blue); color: var(--froala-white); }
+
+  .btn-filled {
+    padding: 9px 22px;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    color: var(--froala-white);
+    background: var(--froala-blue);
+    border: 2px solid var(--froala-blue);
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+
+  .btn-filled:hover { background: var(--froala-blue-hover); border-color: var(--froala-blue-hover); }
+
+  .cart-icon {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    color: var(--froala-dark);
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+
+  .cart-icon:hover { color: var(--froala-blue); }
+  .cart-icon svg { width: 22px; height: 22px; }
+
+  /* ── DROPDOWNS ── */
+  .dropdown-panel {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--froala-white);
+    border: 1px solid var(--froala-border);
+    border-radius: 6px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.04);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+  }
+
+  .nav-item:hover .dropdown-panel {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .dropdown-panel.size-wide { min-width: 680px; padding: 24px 28px; }
+  .dropdown-panel.size-med { min-width: 460px; padding: 24px 28px; }
+  .dropdown-panel.size-sm { min-width: 280px; padding: 14px 8px; }
+
+  .dd-grid { display: grid; gap: 28px; }
+  .dd-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+  .dd-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+  .dd-label {
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.9px;
+    color: #A0A4AA;
+    margin-bottom: 8px;
+    padding-left: 10px;
+  }
+
+  .dd-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 10px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: background 0.15s ease;
+  }
+
+  .dd-link:hover { background: var(--froala-light-bg); }
+
+  .dd-link .ico {
+    width: 34px; height: 34px;
+    border-radius: 6px;
+    background: var(--froala-light-bg);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s ease;
+  }
+
+  .dd-link:hover .ico { background: #E6F4FE; }
+
+  .dd-link .ico svg {
+    width: 17px; height: 17px;
+    color: var(--froala-text);
+    transition: color 0.15s ease;
+  }
+
+  .dd-link:hover .ico svg { color: var(--froala-blue); }
+
+  .dd-link .dd-text { display: flex; flex-direction: column; gap: 1px; }
+  .dd-link .dd-text .title { font-size: 14px; font-weight: 700; color: var(--froala-dark); }
+  .dd-link .dd-text .desc { font-size: 12px; font-weight: 400; color: var(--froala-text); }
+
+  .dd-simple {
+    display: block;
+    padding: 7px 12px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--froala-dark);
+    text-decoration: none;
+    border-radius: 5px;
+    transition: all 0.12s ease;
+  }
+
+  .dd-simple:hover { color: var(--froala-blue); background: var(--froala-light-bg); }
+
+  .dd-simple .ext-icon {
+    width: 11px; height: 11px;
+    vertical-align: middle;
+    margin-left: 3px;
+    opacity: 0.35;
+  }
+
+  .dd-simple .tag {
+    display: inline-block;
+    font-size: 9px; font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    background: #E6F4FE;
+    color: var(--froala-blue);
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
+  .dd-cta { color: var(--froala-blue); font-weight: 700; }
+
+  .dd-divider { height: 1px; background: var(--froala-border); margin: 8px 4px; }
+
+  .fw-strip { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--froala-border); }
+  .fw-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+
+  .fw-chip {
+    padding: 4px 10px;
+    font-size: 12px; font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    color: var(--froala-text);
+    background: var(--froala-light-bg);
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.12s ease;
+  }
+
+  .fw-chip:hover { background: #E6F4FE; color: var(--froala-blue); }
+
+  /* ── SOLUTIONS PANEL - wider layout ── */
+  .dropdown-panel.size-solutions {
+    min-width: 720px;
+    padding: 24px 28px;
+  }
+
+  /* Role cards in Solutions */
+  .dd-role-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 11px 10px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: background 0.15s ease;
+    margin-bottom: 2px;
+  }
+
+  .dd-role-card:hover { background: var(--froala-light-bg); }
+
+  .dd-role-card .ico {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    background: var(--froala-light-bg);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s ease;
+  }
+
+  .dd-role-card:hover .ico { background: #E6F4FE; }
+
+  .dd-role-card .ico svg {
+    width: 18px; height: 18px;
+    color: var(--froala-text);
+    transition: color 0.15s ease;
+  }
+
+  .dd-role-card:hover .ico svg { color: var(--froala-blue); }
+
+  .dd-role-card .dd-text { display: flex; flex-direction: column; gap: 2px; }
+  .dd-role-card .dd-text .title { font-size: 14px; font-weight: 700; color: var(--froala-dark); }
+  .dd-role-card .dd-text .desc { font-size: 12px; font-weight: 400; color: var(--froala-text); line-height: 1.4; }
+</style>
+</head>
+
+<body>
+    <div class="email-wrapper">
+        <!-- Email Sidebar -->
+        <div class="email-sidebar">
+            <div class="email-logo">
+                <i class="fa-solid fa-envelope"></i> MailApp
+            </div>
+            <button class="compose-btn">
+                <i class="fa-solid fa-pen"></i> Compose
+            </button>
+            <nav class="email-nav">
+                <div class="email-nav-item active">
+                    <i class="fa-solid fa-inbox"></i>
+                    <span>Inbox</span>
+                    <span class="count">24</span>
+                </div>
+                <div class="email-nav-item">
+                    <i class="fa-solid fa-paper-plane"></i>
+                    <span>Sent</span>
+                </div>
+                <div class="email-nav-item">
+                    <i class="fa-solid fa-file"></i>
+                    <span>Drafts</span>
+                    <span class="count">3</span>
+                </div>
+                <div class="email-nav-item">
+                    <i class="fa-solid fa-star"></i>
+                    <span>Starred</span>
+                </div>
+                <div class="email-nav-item">
+                    <i class="fa-solid fa-trash"></i>
+                    <span>Trash</span>
+                </div>
+            </nav>
+        </div>
+
+        <!-- Main Email Area -->
+        <div class="email-main">
+            <!-- Email Header -->
+            <div class="email-header">
+                <h1>New Message</h1>
+                <div class="email-actions">
+                    <button class="btn btn-secondary" onclick="alert('Saved as draft')">
+                        <i class="fa-solid fa-save"></i> Save Draft
+                    </button>
+                    <button class="btn btn-secondary">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                    <button class="btn btn-primary" onclick="alert('Email sent!')">
+                        <i class="fa-solid fa-paper-plane"></i> Send
+                    </button>
+                </div>
+            </div>
+
+            <!-- Email Content -->
+            <div class="email-content">
+                <div class="email-form">
+
+                    <div class="email-field">
+                        <div class="email-field-label">To:</div>
+                        <input type="email" class="email-field-input" placeholder="recipient@example.com"
+                            value="team@company.com">
+                    </div>
+
+                    <div class="email-field">
+                        <div class="email-field-label">Cc:</div>
+                        <input type="email" class="email-field-input" placeholder="cc@example.com">
+                    </div>
+
+                    <div class="email-field">
+                        <div class="email-field-label">Subject:</div>
+                        <input type="text" class="email-field-input" placeholder="Email subject"
+                            value="Q1 Marketing Campaign Launch">
+                    </div>
+
+                    <div class="email-editor-container">
+                        <div id="froala-editor">
+                            <p>Hi Team,</p>
+
+                            <p>I'm excited to share the details of our Q1 marketing campaign that launches next week.
+                                This campaign will focus on our new product line and target our key demographics through
+                                multiple channels.</p>
+
+                            <h3>Campaign Overview:</h3>
+                            <ul>
+                                <li><strong>Duration:</strong> January 15 - March 31, 2026</li>
+                                <li><strong>Budget:</strong> $150,000</li>
+                                <li><strong>Channels:</strong> Email, Social Media, Content Marketing</li>
+                                <li><strong>Goal:</strong> 25% increase in qualified leads</li>
+                            </ul>
+
+                            <h3>Key Deliverables:</h3>
+                            <ol>
+                                <li>Email campaign series (8 emails)</li>
+                                <li>Social media content calendar</li>
+                                <li>Landing page optimization</li>
+                                <li>Weekly performance reports</li>
+                            </ol>
+
+                            <p>Please review the attached campaign brief and let me know if you have any questions.
+                                We'll have a kickoff meeting on Friday at 2 PM to discuss the execution plan.</p>
+
+                            <p>Best regards,<br>
+                                <strong>Sarah Johnson</strong><br>
+                                Marketing Director<br>
+                                sarah@company.com | (555) 123-4567
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Config Modal -->
+    <div id="configModalOverlay" class="config-modal-overlay" onclick="closeConfigModal(event)">
+        <div class="config-modal">
+            <div class="config-modal-header">
+                <h2 class="config-modal-title">
+                    <i class="fa-solid fa-code"></i> Configuration
+                </h2>
+                <button class="config-modal-close" onclick="closeConfigModal(event)">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+            </div>
+            <div class="config-modal-body">
+                <div class="config-section">
+                    <h2 style="margin-top: 0; color: #1f2937;">Froala Configuration for Email</h2>
+                    <p style="color: #6b7280; margin-bottom: 1.5rem;">This demo uses the following Froala Editor
+                        configuration optimized
+                        for email composition:</p>
+
+                    
+                    <div class="config-explanation" style="background: rgba(0, 152, 247, 0.05); padding: 1.2rem; border-radius: 8px; margin-bottom: 1.5rem; border-left: 4px solid #0098f7;">
+                        <h4 style="margin-top: 0; color: #0f172a; margin-bottom: 0.5rem;"><i class="fa-solid fa-lightbulb" style="color: #0098f7; margin-right: 0.5rem;"></i>Why this configuration is chosen:</h4>
+                        <ul style="color: #334155; margin: 0; padding-left: 1.2rem; font-size: 0.95rem; line-height: 1.6;">
+                            <li style="margin-bottom: 0.3rem;"><strong>Email Client Compatibility:</strong> Specifically utilizes <a href="https://froala.com/wysiwyg-editor/docs/options/#htmlAllowedStyleProps" target="_blank" style="color: #0098f7; text-decoration: none; font-family: monospace; font-weight: bold;">htmlAllowedStyleProps</a> to force formatting via inline CSS, bypassing external stylesheets which are frequently stripped out in desktop and web email clients.</li>
+                            <li style="margin-bottom: 0.3rem;"><strong>Precise Structure:</strong> Retains <a href="https://froala.com/wysiwyg-editor/docs/plugins/table-plugin/" target="_blank" style="color: #0098f7; text-decoration: none; font-family: monospace; font-weight: bold;">table</a> support, the gold-standard layout system for structurally-bound email newsletters over modern flexbox/grid.</li>
+                            <li><strong>Personalized Communication:</strong> Features <a href="https://froala.com/wysiwyg-editor/docs/plugins/emoticons-plugin/" target="_blank" style="color: #0098f7; text-decoration: none; font-family: monospace; font-weight: bold;">emoticons</a> and custom font controls, ensuring automated outreach feels personalized and authentic.</li>
+                        </ul>
+                    </div>
+                    <div class="config-code-container">
+                        <div class="config-code-header">
+                            <div class="config-code-title">
+                                <i class="fa-brands fa-js"></i> JavaScript Configuration
+                            </div>
+                            <button class="copy-btn" onclick="copyConfig()">
+                                <i class="fa-solid fa-copy"></i> Copy Config
+                            </button>
+                        </div>
+                        <pre class="config-code"><code>new FroalaEditor('#froala-editor', {
+  key: 'YOUR_LICENSE_KEY',
+  pluginsEnabled: [
+    'align', 'colors', 'fontSize', 'fontFamily',
+    'paragraphFormat', 'lists', 'link', 'image',
+    'table', 'emoticons', 'specialCharacters',
+    'inlineStyle', 'lineHeight'
+  ],
+  toolbarButtons: {
+    'moreText': {
+      'buttons': ['bold', 'italic', 'underline',
+                  'fontFamily', 'fontSize', 'textColor',
+                  'backgroundColor', 'clearFormatting']
+    },
+    'moreParagraph': {
+      'buttons': ['alignLeft', 'alignCenter', 'alignRight',
+                  'formatOL', 'formatUL', 'outdent', 'indent',
+                  'lineHeight']
+    },
+    'moreRich': {
+      'buttons': ['insertLink', 'insertImage', 'insertTable',
+                  'emoticons', 'specialCharacters', 'insertHR']
+    },
+    'moreMisc': {
+      'buttons': ['undo', 'redo', 'html']
+    }
+  },
+  heightMin: 350,
+  placeholderText: 'Compose your email...',
+  htmlAllowedStyleProps: ['font-family', 'font-size', 'background',
+                          'color', 'text-align', 'padding', 'margin'],
+  pastePlain: false,
+  htmlRemoveTags: ['script', 'style'],
+  imageEditButtons: ['imageReplace', 'imageAlign', 'imageRemove'],
+  imageMaxSize: 5 * 1024 * 1024,
+  imageDefaultWidth: 300,
+  linkAlwaysBlank: true,
+  linkAutoPrefix: 'https://'
+});</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="config_utils.js"></script>
+    </div>
+
+    <script type="text/javascript"
+        src="https://cdn.jsdelivr.net/npm/froala-editor@latest/js/froala_editor.pkgd.min.js"></script>
+    <script>
+        new FroalaEditor('#froala-editor', {
+            key: 'Lc2C1qC1D1D4C3qB12qC8tsE4B-8F3J3A6B8B5D5D2A2di1aaA4cA1lnE1F2nrXYb1VPUGRHYZNRJd1JVOOb1HAc1zSZC1KGD1D1D1A1F1I4A10B1C6E4==',
+            pluginsEnabled: [
+                'align', 'colors', 'fontSize', 'fontFamily',
+                'paragraphFormat', 'lists', 'link', 'image',
+                'table', 'emoticons', 'specialCharacters',
+                'inlineStyle', 'lineHeight'
+            ],
+            toolbarButtons: {
+                'moreText': {
+                    'buttons': ['bold', 'italic', 'underline',
+                        'fontFamily', 'fontSize', 'textColor',
+                        'backgroundColor', 'clearFormatting']
+                },
+                'moreParagraph': {
+                    'buttons': ['alignLeft', 'alignCenter', 'alignRight',
+                        'formatOL', 'formatUL', 'outdent', 'indent',
+                        'lineHeight']
+                },
+                'moreRich': {
+                    'buttons': ['insertLink', 'insertImage', 'insertTable',
+                        'emoticons', 'specialCharacters', 'insertHR']
+                },
+                'moreMisc': {
+                    'buttons': ['undo', 'redo', 'html']
+                }
+            },
+            heightMin: 350,
+            placeholderText: 'Compose your email...',
+            htmlAllowedStyleProps: ['font-family', 'font-size', 'background',
+                'color', 'text-align', 'padding', 'margin'],
+            pastePlain: false,
+            htmlRemoveTags: ['script', 'style'],
+            imageEditButtons: ['imageReplace', 'imageAlign', 'imageRemove'],
+            imageMaxSize: 5 * 1024 * 1024,
+            imageDefaultWidth: 300,
+            linkAlwaysBlank: true,
+            linkAutoPrefix: 'https://'
+        });
+
+        function toggleConfig() {
+            const modal = document.getElementById('configModal');
+            modal.classList.toggle('active');
+        }
+
+        function closeModalOnOutside(event) {
+            if (event.target.id === 'configModal') {
+                toggleConfig();
+            }
+        }
+
+        function copyConfig() {
+            const configText = document.querySelector('.config-code code').textContent;
+            navigator.clipboard.writeText(configText).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fa-solid fa-copy"></i> Copy Config';
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('configModal');
+                if (modal.classList.contains('active')) {
+                    toggleConfig();
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

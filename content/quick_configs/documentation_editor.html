@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation Editor - Froala Demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/froala-editor@latest/css/froala_editor.pkgd.min.css" rel="stylesheet"
+        type="text/css" />
+    <link href="https://cdn.jsdelivr.net/npm/froala-editor@latest/css/froala_style.min.css" rel="stylesheet"
+        type="text/css" />
+
+    <style>
+        :root {
+            --primary-blue: #0084ff;
+            --primary-dark: #0066cc;
+            --text-dark: #1a1a1a;
+            --text-gray: #6b7280;
+            --bg-light: #f9fafb;
+            --docs-gradient: var(--gradient-primary);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background: white;
+        }
+
+        /* Docs Layout */
+        .docs-wrapper {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Left Sidebar - TOC */
+        .docs-sidebar {
+            width: 280px;
+            background: #fafbfc;
+            border-right: 1px solid #e5e7eb;
+            padding: 1.5rem;
+            overflow-y: auto;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .docs-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--docs-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 2rem;
+        }
+
+        .toc-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .toc-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--text-gray);
+            margin-bottom: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+
+        .toc-item {
+            padding: 0.5rem 0.75rem;
+            color: var(--text-dark);
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .toc-item:hover {
+            background: white;
+        }
+
+        .toc-item.active {
+            background: white;
+            color: var(--primary-blue);
+            font-weight: 600;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Main Content */
+        .docs-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Top Bar */
+        .docs-topbar {
+            background: white;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .docs-breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-gray);
+            font-size: 0.9rem;
+        }
+
+        .docs-breadcrumb i {
+            font-size: 0.7rem;
+        }
+
+        .docs-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1.25rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .btn-secondary {
+            background: var(--bg-light);
+            color: #374151;
+        }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+
+        .btn-primary {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        /* Editor Area */
+        .docs-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 3rem;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary-blue);
+            font-weight: 500;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            gap: 0.75rem;
+        }
+
+        .doc-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+            border: none;
+            padding: 0.5rem;
+            width: 100%;
+            outline: none;
+            border-radius: 4px;
+        }
+
+        .doc-title:focus {
+            background: var(--bg-light);
+        }
+
+        .doc-meta {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 0.9rem;
+            color: var(--text-gray);
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Right Sidebar - Actions */
+        .docs-right-sidebar {
+            width: 250px;
+            background: #fafbfc;
+            border-left: 1px solid #e5e7eb;
+            padding: 2rem 1.5rem;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+
+        .sidebar-section {
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-section h3 {
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--text-gray);
+            margin-bottom: 1rem;
+            letter-spacing: 0.05em;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            color: var(--text-dark);
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .sidebar-link:hover {
+            background: white;
+        }
+
+        .version-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: #dbeafe;
+            color: #1e40af;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* Config Modal */
+        .config-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .config-modal.active {
+            display: flex;
+        }
+
+        .config-modal-content {
+            background: white;
+            border-radius: 12px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        .config-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .config-modal-header h2 {
+            margin: 0;
+            color: var(--text-dark);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-gray);
+        }
+
+        .config-code-container {
+            background: #1e1e1e;
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .config-code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .config-code-title {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .copy-btn {
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .copy-btn.copied {
+            background: #10b981;
+        }
+
+        .config-code {
+            color: #d4d4d4;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            overflow-x: auto;
+        }
+
+        /* Normalize list indentation in Froala editor */
+        .fr-element ul,
+        .fr-element ol,
+        .fr-view ul,
+        .fr-view ol {
+            margin-left: 0 !important;
+            padding-left: 1.5em !important;
+        }
+    </style>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --froala-blue: #0098F7;
+    --froala-blue-hover: #0080d4;
+    --froala-dark: #373A3E;
+    --froala-text: #5A5D63;
+    --froala-light-bg: #F5F8FA;
+    --froala-border: #E0E4E8;
+    --froala-white: #FFFFFF;
+    --nav-height: 72px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--froala-white);
+    color: var(--froala-dark);
+  }
+
+  .navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: var(--froala-white);
+    border-bottom: 1px solid var(--froala-border);
+    height: var(--nav-height);
+    display: flex;
+    align-items: center;
+    padding: 0 40px;
+  }
+
+  .navbar-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 1240px;
+    margin: 0 auto;
+  }
+
+  .nav-logo {
+    text-decoration: none;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  .nav-logo .logo-text {
+    font-size: 28px;
+    font-weight: 800;
+    font-style: italic;
+    color: var(--froala-blue);
+    letter-spacing: -0.5px;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    list-style: none;
+  }
+
+  .nav-item { position: relative; }
+
+  .nav-item::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    height: 10px;
+  }
+
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 10px 14px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--froala-dark);
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    background: none;
+    font-family: 'Nunito', sans-serif;
+    transition: color 0.15s ease;
+    white-space: nowrap;
+  }
+
+  .nav-link:hover { color: var(--froala-blue); }
+
+  .nav-link .chevron {
+    width: 12px; height: 12px;
+    opacity: 0.45;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+
+  .nav-item:hover .chevron { transform: rotate(180deg); opacity: 0.7; }
+  .nav-item:hover > .nav-link { color: var(--froala-blue); }
+
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+
+  .btn-outline {
+    padding: 7px 22px;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    color: var(--froala-blue);
+    border: 2px solid var(--froala-blue);
+    border-radius: 4px;
+    text-decoration: none;
+    background: none;
+    transition: all 0.15s ease;
+  }
+
+  .btn-outline:hover { background: var(--froala-blue); color: var(--froala-white); }
+
+  .btn-filled {
+    padding: 9px 22px;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    color: var(--froala-white);
+    background: var(--froala-blue);
+    border: 2px solid var(--froala-blue);
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+
+  .btn-filled:hover { background: var(--froala-blue-hover); border-color: var(--froala-blue-hover); }
+
+  .cart-icon {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    color: var(--froala-dark);
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+
+  .cart-icon:hover { color: var(--froala-blue); }
+  .cart-icon svg { width: 22px; height: 22px; }
+
+  /* ── DROPDOWNS ── */
+  .dropdown-panel {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--froala-white);
+    border: 1px solid var(--froala-border);
+    border-radius: 6px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.04);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+  }
+
+  .nav-item:hover .dropdown-panel {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .dropdown-panel.size-wide { min-width: 680px; padding: 24px 28px; }
+  .dropdown-panel.size-med { min-width: 460px; padding: 24px 28px; }
+  .dropdown-panel.size-sm { min-width: 280px; padding: 14px 8px; }
+
+  .dd-grid { display: grid; gap: 28px; }
+  .dd-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+  .dd-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+  .dd-label {
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.9px;
+    color: #A0A4AA;
+    margin-bottom: 8px;
+    padding-left: 10px;
+  }
+
+  .dd-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 10px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: background 0.15s ease;
+  }
+
+  .dd-link:hover { background: var(--froala-light-bg); }
+
+  .dd-link .ico {
+    width: 34px; height: 34px;
+    border-radius: 6px;
+    background: var(--froala-light-bg);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s ease;
+  }
+
+  .dd-link:hover .ico { background: #E6F4FE; }
+
+  .dd-link .ico svg {
+    width: 17px; height: 17px;
+    color: var(--froala-text);
+    transition: color 0.15s ease;
+  }
+
+  .dd-link:hover .ico svg { color: var(--froala-blue); }
+
+  .dd-link .dd-text { display: flex; flex-direction: column; gap: 1px; }
+  .dd-link .dd-text .title { font-size: 14px; font-weight: 700; color: var(--froala-dark); }
+  .dd-link .dd-text .desc { font-size: 12px; font-weight: 400; color: var(--froala-text); }
+
+  .dd-simple {
+    display: block;
+    padding: 7px 12px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--froala-dark);
+    text-decoration: none;
+    border-radius: 5px;
+    transition: all 0.12s ease;
+  }
+
+  .dd-simple:hover { color: var(--froala-blue); background: var(--froala-light-bg); }
+
+  .dd-simple .ext-icon {
+    width: 11px; height: 11px;
+    vertical-align: middle;
+    margin-left: 3px;
+    opacity: 0.35;
+  }
+
+  .dd-simple .tag {
+    display: inline-block;
+    font-size: 9px; font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    background: #E6F4FE;
+    color: var(--froala-blue);
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
+  .dd-cta { color: var(--froala-blue); font-weight: 700; }
+
+  .dd-divider { height: 1px; background: var(--froala-border); margin: 8px 4px; }
+
+  .fw-strip { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--froala-border); }
+  .fw-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+
+  .fw-chip {
+    padding: 4px 10px;
+    font-size: 12px; font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    color: var(--froala-text);
+    background: var(--froala-light-bg);
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.12s ease;
+  }
+
+  .fw-chip:hover { background: #E6F4FE; color: var(--froala-blue); }
+
+  /* ── SOLUTIONS PANEL - wider layout ── */
+  .dropdown-panel.size-solutions {
+    min-width: 720px;
+    padding: 24px 28px;
+  }
+
+  /* Role cards in Solutions */
+  .dd-role-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 11px 10px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: background 0.15s ease;
+    margin-bottom: 2px;
+  }
+
+  .dd-role-card:hover { background: var(--froala-light-bg); }
+
+  .dd-role-card .ico {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    background: var(--froala-light-bg);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s ease;
+  }
+
+  .dd-role-card:hover .ico { background: #E6F4FE; }
+
+  .dd-role-card .ico svg {
+    width: 18px; height: 18px;
+    color: var(--froala-text);
+    transition: color 0.15s ease;
+  }
+
+  .dd-role-card:hover .ico svg { color: var(--froala-blue); }
+
+  .dd-role-card .dd-text { display: flex; flex-direction: column; gap: 2px; }
+  .dd-role-card .dd-text .title { font-size: 14px; font-weight: 700; color: var(--froala-dark); }
+  .dd-role-card .dd-text .desc { font-size: 12px; font-weight: 400; color: var(--froala-text); line-height: 1.4; }
+</style>
+</head>
+
+<body>
+    <div class="docs-wrapper">
+        <!-- Left Sidebar - Table of Contents -->
+        <div class="docs-sidebar">
+            <div class="docs-logo">
+                <i class="fa-solid fa-book"></i> DevDocs
+            </div>
+
+            <div class="toc-section">
+                <div class="toc-title">Getting Started</div>
+                <div class="toc-item">Introduction</div>
+                <div class="toc-item">Quick Start</div>
+                <div class="toc-item">Installation</div>
+            </div>
+
+            <div class="toc-section">
+                <div class="toc-title">Core Concepts</div>
+                <div class="toc-item active">Architecture</div>
+                <div class="toc-item">Components</div>
+                <div class="toc-item">State Management</div>
+                <div class="toc-item">Routing</div>
+            </div>
+
+            <div class="toc-section">
+                <div class="toc-title">API Reference</div>
+                <div class="toc-item">Methods</div>
+                <div class="toc-item">Events</div>
+                <div class="toc-item">Configuration</div>
+            </div>
+
+            <div class="toc-section">
+                <div class="toc-title">Advanced</div>
+                <div class="toc-item">Performance</div>
+                <div class="toc-item">Security</div>
+                <div class="toc-item">Testing</div>
+            </div>
+            <div class="docs-sidebar-footer">
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="docs-main">
+            <!-- Top Bar -->
+            <div class="docs-header">
+                <div class="breadcrumb">
+                    <span>Documentation</span>
+                    <i class="fa-solid fa-chevron-right"></i>
+                    <span>Core Concepts</span>
+                    <i class="fa-solid fa-chevron-right"></i>
+                    <span>Architecture</span>
+                </div>
+                <div class="docs-actions">
+                    <button class="btn btn-secondary">
+                        <i class="fa-solid fa-clock-rotate-left"></i> History
+                    </button>
+                    <button class="btn btn-secondary">
+                        <i class="fa-solid fa-eye"></i> Preview
+                    </button>
+                    <button class="btn btn-primary" onclick="alert('Changes published!')">
+                        <i class="fa-solid fa-check"></i> Publish
+                    </button>
+                </div>
+            </div>
+
+            <!-- Editor Content -->
+            <div class="docs-content">
+                <input type="text" class="doc-title" value="Architecture Overview">
+
+                <div class="doc-meta">
+                    <div class="meta-item">
+                        <i class="fa-solid fa-user"></i>
+                        <span>Last edited by Sarah Chen</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fa-solid fa-clock"></i>
+                        <span>Updated 2 hours ago</span>
+                    </div>
+                </div>
+
+                <div id="froala-editor">
+                    <p>This guide explains the core architecture principles of our framework and how different
+                        components work together.</p>
+
+                    <h2>System Architecture</h2>
+                    <p>Our framework follows a modular architecture pattern that separates concerns and promotes code
+                        reusability. The system is divided into several key layers:</p>
+
+                    <h3>1. Presentation Layer</h3>
+                    <p>The presentation layer handles all user interface components and interactions. It consists of:
+                    </p>
+                    <ul>
+                        <li><strong>View Components</strong> - Reusable UI elements</li>
+                        <li><strong>Layout System</strong> - Grid and responsive layouts</li>
+                        <li><strong>Theme Engine</strong> - Styling and customization</li>
+                    </ul>
+
+                    <h3>2. Business Logic Layer</h3>
+                    <p>This layer contains the core application logic and data processing:</p>
+                    <pre><code>class BusinessLogic {
+  constructor(config) {
+    this.config = config;
+    this.initialize();
+  }
+
+  async processData(input) {
+    // Process and validate input
+    return this.transform(input);
+  }
+}</code></pre>
+
+                    <h3>3. Data Access Layer</h3>
+                    <p>Manages all data operations and external API communications:</p>
+                    <ul>
+                        <li>RESTful API integration</li>
+                        <li>Local storage management</li>
+                        <li>Caching strategies</li>
+                        <li>Real-time data synchronization</li>
+                    </ul>
+
+                    <blockquote>
+                        <p><strong>Note:</strong> Always use the provided API client for data operations to ensure
+                            proper error handling and retry logic.</p>
+                    </blockquote>
+
+                    <h2>Component Communication</h2>
+                    <p>Components communicate through a well-defined event system. Here's how different parts interact:
+                    </p>
+
+                    <ol>
+                        <li><strong>Event Emitters</strong> - Components emit events when state changes</li>
+                        <li><strong>Event Listeners</strong> - Other components subscribe to these events</li>
+                        <li><strong>State Management</strong> - Centralized state keeps data consistent</li>
+                    </ol>
+
+                    <h2>Best Practices</h2>
+                    <p>Follow these architectural guidelines for optimal results:</p>
+                    <ul>
+                        <li>Keep components small and focused</li>
+                        <li>Use dependency injection for better testability</li>
+                        <li>Implement proper error boundaries</li>
+                        <li>Document your code thoroughly</li>
+                    </ul>
+
+                    <h2>Next Steps</h2>
+                    <p>Now that you understand the architecture, explore these related topics:</p>
+                    <ul>
+                        <li><a href="#">Component Lifecycle</a></li>
+                        <li><a href="#">State Management Guide</a></li>
+                        <li><a href="#">API Reference</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Sidebar -->
+        <div class="docs-right-sidebar">
+            <div class="sidebar-section">
+                <h3>On This Page</h3>
+                <div class="sidebar-link">System Architecture</div>
+                <div class="sidebar-link">Component Communication</div>
+                <div class="sidebar-link">Best Practices</div>
+                <div class="sidebar-link">Next Steps</div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>Version</h3>
+                <div class="version-badge">v3.2.1</div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>Actions</h3>
+                <div class="sidebar-link">
+                    <i class="fa-solid fa-pencil"></i>
+                    Edit Page
+                </div>
+                <div class="sidebar-link">
+                    <i class="fa-solid fa-bug"></i>
+                    Report Issue
+                </div>
+                <div class="sidebar-link">
+                    <i class="fa-solid fa-share"></i>
+                    Share
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Config Toggle -->
+
+    <!-- Config Modal -->
+    <div id="configModalOverlay" class="config-modal-overlay" onclick="closeConfigModal(event)">
+        <div class="config-modal">
+            <div class="config-modal-header">
+                <h2 class="config-modal-title">
+                    <i class="fa-solid fa-code"></i> Configuration
+                </h2>
+                <button class="config-modal-close" onclick="closeConfigModal(event)">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+            </div>
+            <div class="config-modal-body">
+                <div class="config-section">
+                    <h2 style="margin-top: 0; color: #1f2937;">Froala Configuration for Documentation</h2>
+                    <p style="color: #6b7280; margin-bottom: 1.5rem;">This demo uses the following Froala Editor
+                        configuration optimized
+                        for technical documentation:</p>
+
+                    
+                    <div class="config-explanation" style="background: rgba(0, 152, 247, 0.05); padding: 1.2rem; border-radius: 8px; margin-bottom: 1.5rem; border-left: 4px solid #0098f7;">
+                        <h4 style="margin-top: 0; color: #0f172a; margin-bottom: 0.5rem;"><i class="fa-solid fa-lightbulb" style="color: #0098f7; margin-right: 0.5rem;"></i>Why this configuration is chosen:</h4>
+                        <ul style="color: #334155; margin: 0; padding-left: 1.2rem; font-size: 0.95rem; line-height: 1.6;">
+                            <li style="margin-bottom: 0.3rem;"><strong>Developer Centric:</strong> Elevates the <a href="https://froala.com/wysiwyg-editor/docs/plugins/code-view-plugin/" target="_blank" style="color: #0098f7; text-decoration: none; font-family: monospace; font-weight: bold;">codeView</a> and <a href="https://froala.com/wysiwyg-editor/docs/plugins/code-beautifier-plugin/" target="_blank" style="color: #0098f7; text-decoration: none; font-family: monospace; font-weight: bold;">codeBeautifier</a> capabilities, ensuring technical code snippets and JSON examples within documentation wrap naturally and look professional.</li>
+                            <li style="margin-bottom: 0.3rem;"><strong>Semantic Hierarchies:</strong> Maps <a href="https://froala.com/wysiwyg-editor/docs/plugins/paragraph-format-plugin/" target="_blank" style="color: #0098f7; text-decoration: none; font-family: monospace; font-weight: bold;">paragraphFormat</a> explicitly to standardized headers (H1 through H4) to guarantee technical onboarding flows logically like a textbook.</li>
+                            <li><strong>Expansive Focus:</strong> Includes strong defaults like <a href="https://froala.com/wysiwyg-editor/docs/options/#heightMin" target="_blank" style="color: #0098f7; text-decoration: none; font-family: monospace; font-weight: bold;">heightMin</a> and <a href="https://froala.com/wysiwyg-editor/docs/plugins/fullscreen-plugin/" target="_blank" style="color: #0098f7; text-decoration: none; font-family: monospace; font-weight: bold;">fullscreen</a> to accommodate deep, unbroken sessions of technical authoring.</li>
+                        </ul>
+                    </div>
+                    <div class="config-code-container">
+                        <div class="config-code-header">
+                            <div class="config-code-title">
+                                <i class="fa-brands fa-js"></i> JavaScript Configuration
+                            </div>
+                            <button class="copy-btn" onclick="copyConfig()">
+                                <i class="fa-solid fa-copy"></i> Copy Config
+                            </button>
+                        </div>
+                        <pre class="config-code"><code>new FroalaEditor('#froala-editor', {
+  key: 'YOUR_LICENSE_KEY',
+  pluginsEnabled: [
+    'align', 'paragraphFormat', 'lists',
+    'link', 'image', 'codeView', 'codeBeautifier',
+    'table', 'quote', 'specialCharacters',
+    'fullscreen', 'wordCounter'
+  ],
+  toolbarButtons: {
+    'moreText': {
+      'buttons': ['bold', 'italic', 'underline', 'code']
+    },
+    'moreParagraph': {
+      'buttons': ['formatOL', 'formatUL', 'paragraphFormat',
+                  'outdent', 'indent', 'quote']
+    },
+    'moreRich': {
+      'buttons': ['insertLink', 'insertImage', 'insertTable',
+                  'specialCharacters', 'insertHR']
+    },
+    'moreMisc': {
+      'buttons': ['undo', 'redo', 'fullscreen', 'html']
+    }
+  },
+  heightMin: 500,
+  placeholderText: 'Write documentation...',
+  paragraphFormat: {
+    'N': 'Normal',
+    'H1': 'Heading 1',
+    'H2': 'Heading 2',
+    'H3': 'Heading 3',
+    'H4': 'Heading 4',
+    'PRE': 'Code Block'
+  },
+  codeBeautifierOptions: {
+    end_with_newline: true,
+    indent_inner_html: true,
+    indent_size: 2
+  },
+  linkAlwaysBlank: false,
+  linkAutoPrefix: '',
+  linkEditButtons: ['linkOpen', 'linkEdit', 'linkRemove'],
+  imageEditButtons: ['imageReplace', 'imageAlign',
+                     'imageCaption', 'imageRemove', 'imageAlt'],
+  wordCounterMax: -1
+});</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="config_utils.js"></script>
+    <script type="text/javascript"
+        src="https://cdn.jsdelivr.net/npm/froala-editor@latest/js/froala_editor.pkgd.min.js"></script>
+    <script>
+        new FroalaEditor('#froala-editor', {
+            key: 'Lc2C1qC1D1D4C3qB12qC8tsE4B-8F3J3A6B8B5D5D2A2di1aaA4cA1lnE1F2nrXYb1VPUGRHYZNRJd1JVOOb1HAc1zSZC1KGD1D1D1A1F1I4A10B1C6E4==',
+            pluginsEnabled: [
+                'align', 'paragraphFormat', 'lists',
+                'link', 'image', 'codeView', 'codeBeautifier',
+                'table', 'quote', 'specialCharacters',
+                'fullscreen', 'wordCounter'
+            ],
+            toolbarButtons: {
+                'moreText': {
+                    'buttons': ['bold', 'italic', 'underline', 'code']
+                },
+                'moreParagraph': {
+                    'buttons': ['formatOL', 'formatUL', 'paragraphFormat',
+                        'outdent', 'indent', 'quote']
+                },
+                'moreRich': {
+                    'buttons': ['insertLink', 'insertImage', 'insertTable',
+                        'specialCharacters', 'insertHR']
+                },
+                'moreMisc': {
+                    'buttons': ['undo', 'redo', 'fullscreen', 'html']
+                }
+            },
+            heightMin: 500,
+            placeholderText: 'Write documentation...',
+            paragraphFormat: {
+                'N': 'Normal',
+                'H1': 'Heading 1',
+                'H2': 'Heading 2',
+                'H3': 'Heading 3',
+                'H4': 'Heading 4',
+                'PRE': 'Code Block'
+            },
+            codeBeautifierOptions: {
+                end_with_newline: true,
+                indent_inner_html: true,
+                indent_size: 2
+            },
+            linkAlwaysBlank: false,
+            linkAutoPrefix: '',
+            linkEditButtons: ['linkOpen', 'linkEdit', 'linkRemove'],
+            imageEditButtons: ['imageReplace', 'imageAlign',
+                'imageCaption', 'imageRemove', 'imageAlt'],
+            wordCounterMax: -1
+        });
+
+        function toggleConfig() {
+            const modal = document.getElementById('configModal');
+            modal.classList.toggle('active');
+        }
+
+        function closeModalOnOutside(event) {
+            if (event.target.id === 'configModal') {
+                toggleConfig();
+            }
+        }
+
+        function copyConfig() {
+            const configText = document.querySelector('.config-code code').textContent;
+            navigator.clipboard.writeText(configText).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fa-solid fa-copy"></i> Copy Config';
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('configModal');
+                if (modal.classList.contains('active')) {
+                    toggleConfig();
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

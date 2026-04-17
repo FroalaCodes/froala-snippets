@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Note Taking - Froala Demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/froala-editor@latest/css/froala_editor.pkgd.min.css" rel="stylesheet"
+        type="text/css" />
+    <link href="https://cdn.jsdelivr.net/npm/froala-editor@latest/css/froala_style.min.css" rel="stylesheet"
+        type="text/css" />
+
+    <style>
+        :root {
+            --primary-blue: #0084ff;
+            --primary-dark: #0066cc;
+            --text-dark: #1a1a1a;
+            --text-gray: #6b7280;
+            --bg-light: #f9fafb;
+            /* --notes-yellow: #ffd700; --notes-purple: #9333ea; Removed unused vars */
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background: #f5f5f5;
+        }
+
+        /* Notes Layout */
+        .notes-wrapper {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Left Sidebar - Notebooks */
+        .notes-sidebar {
+            width: 260px;
+            background: white;
+            border-right: 1px solid #e5e7eb;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .notes-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .notes-logo {
+            font-size: 1.6rem;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        .new-note-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .new-note-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(147, 51, 234, 0.4);
+        }
+
+        .notebooks {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+
+        .notebooks-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--text-gray);
+            margin-bottom: 1rem;
+            letter-spacing: 0.05em;
+            padding: 0 0.5rem;
+        }
+
+        .notebook-item {
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            margin-bottom: 0.5rem;
+        }
+
+        .notebook-item:hover {
+            background: var(--bg-light);
+        }
+
+        .notebook-item.active {
+            background: rgba(0, 145, 235, 0.1);
+            color: var(--primary-blue);
+            font-weight: 600;
+        }
+
+        .notebook-icon {
+            font-size: 1.1rem;
+        }
+
+        .notebook-count {
+            margin-left: auto;
+            font-size: 0.85rem;
+            color: var(--text-gray);
+        }
+
+        /* Middle - Notes List */
+        .notes-list {
+            width: 300px;
+            background: white;
+            border-right: 1px solid #e5e7eb;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .notes-list-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .notes-list-header h2 {
+            margin: 0 0 1rem 0;
+            font-size: 1.3rem;
+            color: var(--text-dark);
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        .search-box:focus {
+            border-color: var(--primary-blue);
+        }
+
+        .notes-items {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0.5rem;
+        }
+
+        .note-item {
+            padding: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 0.5rem;
+            border: 1px solid transparent;
+        }
+
+        .note-item:hover {
+            background: var(--bg-light);
+        }
+
+        .note-item.active {
+            background: rgba(0, 145, 235, 0.1);
+            border-color: var(--primary-blue);
+        }
+
+        .note-item-title {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .note-item-preview {
+            font-size: 0.85rem;
+            color: var(--text-gray);
+            line-height: 1.4;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .note-item-date {
+            font-size: 0.8rem;
+            color: var(--text-gray);
+            margin-top: 0.5rem;
+        }
+
+        /* Main Editor */
+        .notes-editor {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: white;
+        }
+
+        .editor-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            flex-direction: column;
+            /* Changed to column to stack back-link and toolbar */
+            gap: 1rem;
+            /* Space between back-link and toolbar */
+        }
+
+        .notes-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .notes-actions {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .editor-status {
+            font-size: 0.85rem;
+            color: var(--text-gray);
+        }
+
+        .btn {
+            padding: 0.5rem 1.25rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            background: var(--bg-light);
+            color: var(--text-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .btn-icon:hover {
+            background: #e5e7eb;
+        }
+
+        .btn-ghost {
+            background: none;
+            border: none;
+            color: var(--text-gray);
+            padding: 0.5rem 0.75rem;
+        }
+
+        .btn-ghost:hover {
+            background: var(--bg-light);
+        }
+
+        .editor-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem 3rem;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary-blue);
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            gap: 0.75rem;
+        }
+
+        .note-title {
+            width: 100%;
+            border: none;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            padding: 0.5rem;
+            outline: none;
+            color: var(--text-dark);
+        }
+
+        .note-meta {
+            padding: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-gray);
+            display: flex;
+            gap: 1rem;
+        }
+
+        /* Config Modal */
+        .config-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .config-modal-overlay.active {
+            display: flex;
+        }
+
+        .config-modal {
+            background: white;
+            border-radius: 12px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 2rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .config-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .config-modal-title {
+            margin: 0;
+            color: var(--text-dark);
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .config-modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-gray);
+            transition: color 0.3s ease;
+        }
+
+        .config-modal-close:hover {
+            color: var(--text-dark);
+        }
+
+        .config-section {
+            margin-bottom: 2rem;
+        }
+
+        .config-code-container {
+            background: #1e1e1e;
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .config-code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .config-code-title {
+            color: #fff;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .copy-btn {
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .copy-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .copy-btn.copied {
+            background: #10b981;
+        }
+
+        .config-code {
+            color: #d4d4d4;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            overflow-x: auto;
+        }
+
+        /* Normalize list indentation in Froala editor */
+        .fr-element ul,
+        .fr-element ol,
+        .fr-view ul,
+        .fr-view ol {
+            margin-left: 0 !important;
+            padding-left: 1.5em !important;
+        }
+    </style>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --froala-blue: #0098F7;
+    --froala-blue-hover: #0080d4;
+    --froala-dark: #373A3E;
+    --froala-text: #5A5D63;
+    --froala-light-bg: #F5F8FA;
+    --froala-border: #E0E4E8;
+    --froala-white: #FFFFFF;
+    --nav-height: 72px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--froala-white);
+    color: var(--froala-dark);
+  }
+
+  .navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: var(--froala-white);
+    border-bottom: 1px solid var(--froala-border);
+    height: var(--nav-height);
+    display: flex;
+    align-items: center;
+    padding: 0 40px;
+  }
+
+  .navbar-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 1240px;
+    margin: 0 auto;
+  }
+
+  .nav-logo {
+    text-decoration: none;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  .nav-logo .logo-text {
+    font-size: 28px;
+    font-weight: 800;
+    font-style: italic;
+    color: var(--froala-blue);
+    letter-spacing: -0.5px;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    list-style: none;
+  }
+
+  .nav-item { position: relative; }
+
+  .nav-item::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    height: 10px;
+  }
+
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 10px 14px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--froala-dark);
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    background: none;
+    font-family: 'Nunito', sans-serif;
+    transition: color 0.15s ease;
+    white-space: nowrap;
+  }
+
+  .nav-link:hover { color: var(--froala-blue); }
+
+  .nav-link .chevron {
+    width: 12px; height: 12px;
+    opacity: 0.45;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+
+  .nav-item:hover .chevron { transform: rotate(180deg); opacity: 0.7; }
+  .nav-item:hover > .nav-link { color: var(--froala-blue); }
+
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+
+  .btn-outline {
+    padding: 7px 22px;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    color: var(--froala-blue);
+    border: 2px solid var(--froala-blue);
+    border-radius: 4px;
+    text-decoration: none;
+    background: none;
+    transition: all 0.15s ease;
+  }
+
+  .btn-outline:hover { background: var(--froala-blue); color: var(--froala-white); }
+
+  .btn-filled {
+    padding: 9px 22px;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    color: var(--froala-white);
+    background: var(--froala-blue);
+    border: 2px solid var(--froala-blue);
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+
+  .btn-filled:hover { background: var(--froala-blue-hover); border-color: var(--froala-blue-hover); }
+
+  .cart-icon {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    color: var(--froala-dark);
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+
+  .cart-icon:hover { color: var(--froala-blue); }
+  .cart-icon svg { width: 22px; height: 22px; }
+
+  /* ── DROPDOWNS ── */
+  .dropdown-panel {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--froala-white);
+    border: 1px solid var(--froala-border);
+    border-radius: 6px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.04);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+  }
+
+  .nav-item:hover .dropdown-panel {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .dropdown-panel.size-wide { min-width: 680px; padding: 24px 28px; }
+  .dropdown-panel.size-med { min-width: 460px; padding: 24px 28px; }
+  .dropdown-panel.size-sm { min-width: 280px; padding: 14px 8px; }
+
+  .dd-grid { display: grid; gap: 28px; }
+  .dd-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+  .dd-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+  .dd-label {
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.9px;
+    color: #A0A4AA;
+    margin-bottom: 8px;
+    padding-left: 10px;
+  }
+
+  .dd-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 10px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: background 0.15s ease;
+  }
+
+  .dd-link:hover { background: var(--froala-light-bg); }
+
+  .dd-link .ico {
+    width: 34px; height: 34px;
+    border-radius: 6px;
+    background: var(--froala-light-bg);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s ease;
+  }
+
+  .dd-link:hover .ico { background: #E6F4FE; }
+
+  .dd-link .ico svg {
+    width: 17px; height: 17px;
+    color: var(--froala-text);
+    transition: color 0.15s ease;
+  }
+
+  .dd-link:hover .ico svg { color: var(--froala-blue); }
+
+  .dd-link .dd-text { display: flex; flex-direction: column; gap: 1px; }
+  .dd-link .dd-text .title { font-size: 14px; font-weight: 700; color: var(--froala-dark); }
+  .dd-link .dd-text .desc { font-size: 12px; font-weight: 400; color: var(--froala-text); }
+
+  .dd-simple {
+    display: block;
+    padding: 7px 12px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--froala-dark);
+    text-decoration: none;
+    border-radius: 5px;
+    transition: all 0.12s ease;
+  }
+
+  .dd-simple:hover { color: var(--froala-blue); background: var(--froala-light-bg); }
+
+  .dd-simple .ext-icon {
+    width: 11px; height: 11px;
+    vertical-align: middle;
+    margin-left: 3px;
+    opacity: 0.35;
+  }
+
+  .dd-simple .tag {
+    display: inline-block;
+    font-size: 9px; font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    background: #E6F4FE;
+    color: var(--froala-blue);
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
+  .dd-cta { color: var(--froala-blue); font-weight: 700; }
+
+  .dd-divider { height: 1px; background: var(--froala-border); margin: 8px 4px; }
+
+  .fw-strip { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--froala-border); }
+  .fw-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+
+  .fw-chip {
+    padding: 4px 10px;
+    font-size: 12px; font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    color: var(--froala-text);
+    background: var(--froala-light-bg);
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.12s ease;
+  }
+
+  .fw-chip:hover { background: #E6F4FE; color: var(--froala-blue); }
+
+  /* ── SOLUTIONS PANEL - wider layout ── */
+  .dropdown-panel.size-solutions {
+    min-width: 720px;
+    padding: 24px 28px;
+  }
+
+  /* Role cards in Solutions */
+  .dd-role-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 11px 10px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: background 0.15s ease;
+    margin-bottom: 2px;
+  }
+
+  .dd-role-card:hover { background: var(--froala-light-bg); }
+
+  .dd-role-card .ico {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    background: var(--froala-light-bg);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s ease;
+  }
+
+  .dd-role-card:hover .ico { background: #E6F4FE; }
+
+  .dd-role-card .ico svg {
+    width: 18px; height: 18px;
+    color: var(--froala-text);
+    transition: color 0.15s ease;
+  }
+
+  .dd-role-card:hover .ico svg { color: var(--froala-blue); }
+
+  .dd-role-card .dd-text { display: flex; flex-direction: column; gap: 2px; }
+  .dd-role-card .dd-text .title { font-size: 14px; font-weight: 700; color: var(--froala-dark); }
+  .dd-role-card .dd-text .desc { font-size: 12px; font-weight: 400; color: var(--froala-text); line-height: 1.4; }
+</style>
+</head>
+
+<body>
+    <div class="notes-wrapper">
+        <!-- Left Sidebar - Notebooks -->
+        <div class="notes-sidebar">
+            <div class="notes-header">
+                <div class="notes-logo">
+                    <i class="fa-solid fa-note-sticky"></i> NoteApp
+                </div>
+                <button class="new-note-btn">
+                    <i class="fa-solid fa-plus"></i> New Note
+                </button>
+            </div>
+
+            <div class="notebooks">
+                <div class="notebooks-title">Notebooks</div>
+                <div class="notebook-item active">
+                    <i class="fa-solid fa-book notebook-icon"></i>
+                    <span>Personal</span>
+                    <span class="notebook-count">12</span>
+                </div>
+                <div class="notebook-item">
+                    <i class="fa-solid fa-briefcase notebook-icon"></i>
+                    <span>Work</span>
+                    <span class="notebook-count">8</span>
+                </div>
+                <div class="notebook-item">
+                    <i class="fa-solid fa-lightbulb notebook-icon"></i>
+                    <span>Ideas</span>
+                    <span class="notebook-count">15</span>
+                </div>
+                <div class="notebook-item">
+                    <i class="fa-solid fa-graduation-cap notebook-icon"></i>
+                    <span>Learning</span>
+                    <span class="notebook-count">6</span>
+                </div>
+                <div class="notebook-item">
+                    <i class="fa-solid fa-star notebook-icon"></i>
+                    <span>Favorites</span>
+                    <span class="notebook-count">3</span>
+                </div>
+                <div class="notebook-item">
+                    <i class="fa-solid fa-archive notebook-icon"></i>
+                    <span>Archived</span>
+                    <span class="notebook-count">24</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Middle - Notes List -->
+        <div class="notes-list">
+            <div class="notes-list-header">
+                <h2>Personal Notes</h2>
+                <input type="text" class="search-box" placeholder="Search notes...">
+            </div>
+
+            <div class="notes-items">
+                <div class="note-item active">
+                    <div class="note-item-title">Meeting Notes - Project Alpha</div>
+                    <div class="note-item-preview">Discussed the new feature roadmap and timeline for Q1 2026...</div>
+                    <div class="note-item-date">Today, 2:30 PM</div>
+                </div>
+
+                <div class="note-item">
+                    <div class="note-item-title">Book Summary: Atomic Habits</div>
+                    <div class="note-item-preview">Key takeaways from James Clear's book on building better habits...
+                    </div>
+                    <div class="note-item-date">Yesterday</div>
+                </div>
+
+                <div class="note-item">
+                    <div class="note-item-title">Recipe: Homemade Pizza</div>
+                    <div class="note-item-preview">Perfect dough recipe that I need to remember. Uses 500g flour...
+                    </div>
+                    <div class="note-item-date">Jan 6</div>
+                </div>
+
+                <div class="note-item">
+                    <div class="note-item-title">Travel Plans - Japan 2026</div>
+                    <div class="note-item-preview">Itinerary for Tokyo, Kyoto, and Osaka. Must-see places and
+                        restaurants...</div>
+                    <div class="note-item-date">Jan 5</div>
+                </div>
+
+                <div class="note-item">
+                    <div class="note-item-title">Gift Ideas</div>
+                    <div class="note-item-preview">Birthday and holiday gift ideas for friends and family...</div>
+                    <div class="note-item-date">Jan 3</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Editor -->
+        <div class="notes-editor">
+            <div class="editor-header">
+                <!-- Toolbar -->
+                <div class="notes-toolbar">
+                    <div class="note-meta">
+                        <span class="note-date">Last edited: Just now</span>
+                        <span class="note-tag">Personal</span>
+                    </div>
+                    <div class="notes-actions">
+                        <button class="btn btn-ghost" title="Share">
+                            <i class="fa-solid fa-share-nodes"></i>
+                        </button>
+                        <button class="btn btn-ghost" title="More options">
+                            <i class="fa-solid fa-ellipsis"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="editor-content">
+                <input type="text" class="note-title" value="Meeting Notes - Project Alpha">
+                <div class="editor-status">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> Saved 2 minutes ago
+                </div>
+
+                <div id="froala-editor">
+                    <h2>Meeting Overview</h2>
+                    <p>Today's meeting covered the Q1 2026 roadmap for Project Alpha. We made some significant decisions
+                        about feature prioritization and timeline adjustments.</p>
+
+                    <h3>Attendees</h3>
+                    <ul>
+                        <li>Sarah Chen (Product Manager)</li>
+                        <li>Mike Rodriguez (Lead Developer)</li>
+                        <li>Emily Watson (UX Designer)</li>
+                        <li>David Kim (QA Lead)</li>
+                    </ul>
+
+                    <h3>Key Decisions</h3>
+                    <ol>
+                        <li><strong>Feature Priority:</strong> User authentication redesign moved to top priority</li>
+                        <li><strong>Timeline:</strong> Beta release pushed to Feb 15 to ensure quality</li>
+                        <li><strong>Resources:</strong> Approved budget for 2 additional contractors</li>
+                    </ol>
+
+                    <h3>Action Items</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Task</th>
+                                <th>Owner</th>
+                                <th>Due Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Update project timeline</td>
+                                <td>Sarah</td>
+                                <td>Jan 10</td>
+                            </tr>
+                            <tr>
+                                <td>Design mockups for auth flow</td>
+                                <td>Emily</td>
+                                <td>Jan 12</td>
+                            </tr>
+                            <tr>
+                                <td>Set up contractor interviews</td>
+                                <td>Mike</td>
+                                <td>Jan 15</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <blockquote>
+                        <p><strong>Important:</strong> Next meeting scheduled for Friday, Jan 12 at 2 PM to review
+                            design mockups.</p>
+                    </blockquote>
+
+                    <h3>Notes & Ideas</h3>
+                    <ul>
+                        <li>Consider implementing OAuth for social login</li>
+                        <li>Emily suggested A/B testing the onboarding flow</li>
+                        <li>Need to discuss security audit requirements with compliance team</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Config Modal -->
+    <div id="configModalOverlay" class="config-modal-overlay" onclick="closeConfigModal(event)">
+        <div class="config-modal">
+            <div class="config-modal-header">
+                <h2 class="config-modal-title">
+                    <i class="fa-solid fa-code"></i> Configuration
+                </h2>
+                <button class="config-modal-close" onclick="closeConfigModal(event)">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+            </div>
+            <div class="config-modal-body">
+                <div class="config-section">
+                    <h2 style="margin-top: 0; color: #1f2937;">Froala Configuration for Notes</h2>
+                    <p style="color: #6b7280; margin-bottom: 1.5rem;">This demo uses the following Froala Editor
+                        configuration optimized
+                        for note-taking apps:</p>
+
+                    
+                    <div class="config-explanation" style="background: rgba(0, 152, 247, 0.05); padding: 1.2rem; border-radius: 8px; margin-bottom: 1.5rem; border-left: 4px solid #0098f7;">
+                        <h4 style="margin-top: 0; color: #0f172a; margin-bottom: 0.5rem;"><i class="fa-solid fa-lightbulb" style="color: #0098f7; margin-right: 0.5rem;"></i>Why this configuration is chosen:</h4>
+                        <ul style="color: #334155; margin: 0; padding-left: 1.2rem; font-size: 0.95rem; line-height: 1.6;">
+                            <li style="margin-bottom: 0.3rem;"><strong>Frictionless Workflows:</strong> Turns off visual char counters and uses familiar shortcut keys to mimic lightweight desktop note apps.</li>
+                            <li style="margin-bottom: 0.3rem;"><strong>Rapid Persistence:</strong> Employs extremely fast automatic persistence looping via <a href="https://froala.com/wysiwyg-editor/docs/options/#saveInterval" target="_blank" style="color: #0098f7; text-decoration: none; font-family: monospace; font-weight: bold;">saveInterval</a> to guarantee zero data loss during stream-of-consciousness journaling.</li>
+                            <li><strong>Clean Slate Pacing:</strong> Adjusts behavior using <a href="https://froala.com/wysiwyg-editor/docs/options/#enter" target="_blank" style="color: #0098f7; text-decoration: none; font-family: monospace; font-weight: bold;">enter</a>: FroalaEditor.ENTER_P, maintaining a comfortable vertical rhythm across highly segmented thoughts and isolated points.</li>
+                        </ul>
+                    </div>
+                    <div class="config-code-container">
+                        <div class="config-code-header">
+                            <div class="config-code-title">
+                                <i class="fa-brands fa-js"></i> JavaScript Configuration
+                            </div>
+                            <button class="copy-btn" onclick="copyConfig()">
+                                <i class="fa-solid fa-copy"></i> Copy Config
+                            </button>
+                        </div>
+                        <pre class="config-code"><code>new FroalaEditor('#froala-editor', {
+  key: 'YOUR_LICENSE_KEY',
+  pluginsEnabled: [
+    'align', 'colors', 'fontSize', 'paragraphFormat',
+    'lists', 'link', 'image', 'table',
+    'quote', 'emoticons', 'specialCharacters',
+    'wordCounter', 'charCounter'
+  ],
+  toolbarButtons: {
+    'moreText': {
+      'buttons': ['bold', 'italic', 'underline', 'strikeThrough',
+                  'fontSize', 'textColor', 'backgroundColor',
+                  'clearFormatting']
+    },
+    'moreParagraph': {
+      'buttons': ['formatOL', 'formatUL', 'paragraphFormat',
+                  'alignLeft', 'alignCenter', 'alignRight',
+                  'outdent', 'indent', 'quote']
+    },
+    'moreRich': {
+      'buttons': ['insertLink', 'insertImage', 'insertTable',
+                  'emoticons', 'insertHR']
+    },
+    'moreMisc': {
+      'buttons': ['undo', 'redo', 'selectAll']
+    }
+  },
+  saveInterval: 5000,
+  saveParam: 'content',
+  heightMin: 400,
+  placeholderText: 'Start writing your note...',
+  wordCounterMax: -1,
+  charCounterCount: false,
+  shortcutsEnabled: ['bold', 'italic', 'underline',
+                     'strikeThrough', 'undo', 'redo'],
+  imageEditButtons: ['imageReplace', 'imageAlign',
+                     'imageRemove', 'imageAlt'],
+  imageMaxSize: 5 * 1024 * 1024,
+  imagePaste: true,
+  linkAlwaysBlank: false,
+  linkAutoPrefix: 'https://',
+  pastePlain: false,
+  quickInsertEnabled: false,
+  enter: FroalaEditor.ENTER_P
+});</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="config_utils.js"></script>
+    <script type="text/javascript"
+        src="https://cdn.jsdelivr.net/npm/froala-editor@latest/js/froala_editor.pkgd.min.js"></script>
+    <script>
+        new FroalaEditor('#froala-editor', {
+            key: 'Lc2C1qC1D1D4C3qB12qC8tsE4B-8F3J3A6B8B5D5D2A2di1aaA4cA1lnE1F2nrXYb1VPUGRHYZNRJd1JVOOb1HAc1zSZC1KGD1D1D1A1F1I4A10B1C6E4==',
+            pluginsEnabled: [
+                'align', 'colors', 'fontSize', 'paragraphFormat',
+                'lists', 'link', 'image', 'table',
+                'quote', 'emoticons', 'specialCharacters',
+                'wordCounter', 'charCounter'
+            ],
+            toolbarButtons: {
+                'moreText': {
+                    'buttons': ['bold', 'italic', 'underline', 'strikeThrough',
+                        'fontSize', 'textColor', 'backgroundColor',
+                        'clearFormatting']
+                },
+                'moreParagraph': {
+                    'buttons': ['formatOL', 'formatUL', 'paragraphFormat',
+                        'alignLeft', 'alignCenter', 'alignRight',
+                        'outdent', 'indent', 'quote']
+                },
+                'moreRich': {
+                    'buttons': ['insertLink', 'insertImage', 'insertTable',
+                        'emoticons', 'insertHR']
+                },
+                'moreMisc': {
+                    'buttons': ['undo', 'redo', 'selectAll']
+                }
+            },
+            saveInterval: 5000,
+            saveParam: 'content',
+            heightMin: 400,
+            placeholderText: 'Start writing your note...',
+            wordCounterMax: -1,
+            charCounterCount: false,
+            shortcutsEnabled: ['bold', 'italic', 'underline',
+                'strikeThrough', 'undo', 'redo'],
+            imageEditButtons: ['imageReplace', 'imageAlign',
+                'imageRemove', 'imageAlt'],
+            imageMaxSize: 5 * 1024 * 1024,
+            imagePaste: true,
+            linkAlwaysBlank: false,
+            linkAutoPrefix: 'https://',
+            pastePlain: false,
+            quickInsertEnabled: false,
+            enter: FroalaEditor.ENTER_P
+        });
+
+        function toggleConfig() {
+            const modal = document.getElementById('configModal');
+            modal.classList.toggle('active');
+        }
+
+        function closeModalOnOutside(event) {
+            if (event.target.id === 'configModal') {
+                toggleConfig();
+            }
+        }
+
+        function copyConfig() {
+            const configText = document.querySelector('.config-code code').textContent;
+            navigator.clipboard.writeText(configText).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fa-solid fa-copy"></i> Copy Config';
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('configModal');
+                if (modal.classList.contains('active')) {
+                    toggleConfig();
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>
