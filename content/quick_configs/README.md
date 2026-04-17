@@ -16,7 +16,6 @@ Ready-to-run Froala Editor configurations for 13 common real-world scenarios. Ea
 | Knowledge Base | [knowledge_base.html](knowledge_base.html) | FAQ and wiki-style editor optimized for searchable knowledge articles |
 | LMS Content Editor | [lms_editor.html](lms_editor.html) | Learning Management System editor for creating educational content and courses |
 | Note Taking | [note_taking.html](note_taking.html) | Fast, minimal editor for personal notes and quick captures |
-| Survey / Form Builder | [survey_editor.html](survey_editor.html) | Lightweight editor for composing survey questions and form content |
 | Support Ticket Editor | [ticket_editor.html](ticket_editor.html) | Editor configured for technical support environments — code snippets, attachments, and formatting |
 
 ## Getting Started
