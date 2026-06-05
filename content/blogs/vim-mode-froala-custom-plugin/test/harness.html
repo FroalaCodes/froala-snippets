@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>froala-vim · demo</title>
+  <link href="https://cdn.jsdelivr.net/npm/froala-editor@latest/css/froala_editor.pkgd.min.css" rel="stylesheet">
+  <style>
+    html, body { margin: 0; padding: 0; background: #f7f7f8;
+                 font: 14px/1.5 -apple-system, system-ui, sans-serif; }
+    .wrap { max-width: 880px; margin: 40px auto; padding: 0 24px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div id="editor">
+      <h2>The quick brown fox</h2>
+      <p>The quick brown fox jumps over the lazy dog. This first paragraph is intentionally long so that motions across <em>soft-wrapped</em> lines are observable in a normal-width container.</p>
+      <p><br></p>
+      <p>Jumps over the lazy dog. Second paragraph contains a <strong>second sentence</strong> and a third one too.</p>
+      <p>Line three for vertical motion tests.</p>
+      <table style="border-collapse: collapse; width: 100%;">
+        <thead>
+          <tr><th style="border:1px solid #ccc;padding:6px;">A1</th><th style="border:1px solid #ccc;padding:6px;">B1</th><th style="border:1px solid #ccc;padding:6px;">C1</th></tr>
+        </thead>
+        <tbody>
+          <tr><td style="border:1px solid #ccc;padding:6px;">A2</td><td style="border:1px solid #ccc;padding:6px;">B2</td><td style="border:1px solid #ccc;padding:6px;">C2</td></tr>
+          <tr><td style="border:1px solid #ccc;padding:6px;">A3</td><td style="border:1px solid #ccc;padding:6px;">B3</td><td style="border:1px solid #ccc;padding:6px;">C3</td></tr>
+        </tbody>
+      </table>
+      <p>Paragraph after the table.</p>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/froala-editor@latest/js/froala_editor.pkgd.min.js"></script>
+  <script src="../src/froala.vim.js"></script>
+  <script>
+    // Minimal real-app-style integration: a normal Froala init, plus the
+    // 'vim' toolbar button and a vim config block. No external controls,
+    // no cheatsheet — everything the user sees is rendered by Froala or
+    // by the plugin itself (mode badge, leader-h help overlay).
+    new FroalaEditor('#editor', {
+      attribution: false,
+      toolbarButtons: {
+        moreText:      { buttons: ['bold', 'italic', 'underline', 'strikeThrough', 'fontFamily', 'fontSize', 'textColor', 'backgroundColor', 'clearFormatting'] },
+        moreParagraph: { buttons: ['alignLeft', 'alignCenter', 'alignRight', 'alignJustify', 'formatOL', 'formatUL', 'paragraphFormat', 'paragraphStyle', 'lineHeight', 'outdent', 'indent', 'quote'] },
+        moreRich:      { buttons: ['insertLink', 'insertImage', 'insertTable', 'emoticons', 'specialCharacters', 'insertHR'] },
+        moreMisc:      { buttons: ['vim', 'undo', 'redo', 'fullscreen', 'html'], align: 'right', buttonsVisible: 3 }
+      },
+      vim: {
+        enabled:       true,
+        navLayout:     'hjkl',
+        startMode:     'normal',
+        leader:        ',',
+        showModeBadge: true
+      }
+    });
+  </script>
+</body>
+</html>

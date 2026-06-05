@@ -1,0 +1,24 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Claude Code local state
+.claude/
+
+# Playwright-MCP test artifacts
+.playwright-mcp/
+
+# Logs
+*.log
+
+# Node (only if you later add tooling)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
